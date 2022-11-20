@@ -16,7 +16,7 @@ async def on_ready():
     print(f"{bot.user} is ready and online!")
 
 @bot.slash_command(name = "anyone_me", description = "Set the @anyone target to yourself")
-async def set_anyone(ctx):
+async def set_anyone_me(ctx):
     # get the caller
     member = ctx.author
     # get all server members
@@ -34,7 +34,7 @@ async def set_anyone(ctx):
     await ctx.respond(f"Set {role.mention} to {member.mention}!")
 
 @bot.slash_command(name = "anyone_rand", description = "Set the @anyone target to a random user")
-async def set_anyone(ctx):
+async def set_anyone_rand(ctx):
     # get all server members
     all_members = ctx.guild.members
     # get the 'anyone' role
