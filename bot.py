@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 token = str(os.getenv("TOKEN"))
-bot = discord.Bot()
+
+intents = discord.Intents(guilds = True, members = True)
+bot = discord.Bot(intents=intents)
 
 @bot.event
 async def on_ready():
@@ -16,9 +18,20 @@ async def hello(ctx):
 
 @bot.slash_command(name = "anyone", description = "Set the anyone target")
 async def set_anyone(ctx):
-    user = ctx.author
+    # get the caller
+    member = ctx.author
+    # get all server members
+    all_members = ctx.guild.members
+    # get the 'anyone' role
     role = discord.utils.get(ctx.guild.roles, name="anyone")
-    await user.add_roles(role)
+
+    # remove the 'anyone' role from everyone in the server
+    for m in all_members:
+        await m.remove_roles(role)
+
+    # add the 'anyone' role to the caller
+    await member.add_roles(role)
+    
     await ctx.respond("Set anyone to you!")
 
 bot.run(token)
