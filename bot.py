@@ -5,19 +5,15 @@ from dotenv import load_dotenv
 load_dotenv()
 token = str(os.getenv("TOKEN"))
 
-activity =  discord.Game(name = "Leetcode")
+activity = discord.Game(name = "Leetcode")
 intents = discord.Intents(guilds = True, members = True)
-bot = discord.Bot(intents = intents, activity = activity)
+bot = discord.Bot(activity = activity, intents = intents)
 
 @bot.event
 async def on_ready():
     print(f"{bot.user} is ready and online!")
 
-@bot.slash_command(name = "hello", description = "Say hello to the bot")
-async def hello(ctx):
-    await ctx.respond("Hey!")
-
-@bot.slash_command(name = "anyone", description = "Set the anyone target")
+@bot.slash_command(name = "anyone", description = "Set the @anyone target")
 async def set_anyone(ctx):
     # get the caller
     member = ctx.author
