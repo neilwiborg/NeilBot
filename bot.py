@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 token = str(os.getenv("TOKEN"))
 
+activity =  discord.Game(name = "Leetcode")
 intents = discord.Intents(guilds = True, members = True)
-bot = discord.Bot(intents=intents)
+bot = discord.Bot(intents = intents, activity = activity)
 
 @bot.event
 async def on_ready():
