@@ -52,8 +52,11 @@ async def set_anyone_me(ctx):
         all_members = server.members
         # get the 'anyone' role
         role = discord.utils.get(server.roles, name="anyone")
+        if role:
+            await _anyone_helper(ctx, all_members, member, role)
+        else:
+            await ctx.respond("Error: no role named 'anyone'")
 
-        await _anyone_helper(ctx, all_members, member, role)
     else:
         await ctx.respond("Error: please add me to the server first!")
 
@@ -71,8 +74,11 @@ async def set_anyone_rand(ctx):
         member = random.choice(all_members)
         # get the 'anyone' role
         role = discord.utils.get(ctx.guild.roles, name="anyone")
-
-        await _anyone_helper(ctx, all_members, member, role)
+        if role:
+            await _anyone_helper(ctx, all_members, member, role)
+        else:
+            await ctx.respond("Error: no role named 'anyone'")
+        
     else:
         await ctx.respond("Error: please add me to the server first!")
 
