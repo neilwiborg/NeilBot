@@ -17,15 +17,4 @@ for filename in os.listdir("./neilbot/cogs"):
         # remove the extension from the name
         bot.load_extension(f"cogs.{filename[:-3]}")
 
-@bot.event
-async def on_ready():
-    print(f"{bot.user} is ready and online!")
-
-@bot.event
-async def on_application_command_error(ctx, error):
-    if isinstance(error, commands.CommandOnCooldown):
-        await ctx.respond("This command is currently on cooldown!")
-    else:
-        raise error
-
 bot.run(token)
