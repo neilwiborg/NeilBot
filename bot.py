@@ -41,6 +41,9 @@ async def _anyone_helper(ctx, all_members, member, role):
 @bot.slash_command(name = "anyone_me", description = "Set the @anyone target to yourself")
 @commands.cooldown(1, 10, commands.BucketType.user) 
 async def set_anyone_me(ctx):
+    # give us 15 minutes instead of 3 seconds to respond
+    await ctx.defer(ephemeral = False)
+
     # get the caller
     member = ctx.author
     # get the server
@@ -55,14 +58,18 @@ async def set_anyone_me(ctx):
         if role:
             await _anyone_helper(ctx, all_members, member, role)
         else:
-            await ctx.respond("Error: no role named 'anyone'")
+            ctx.respond("Error: unable to find role 'anyone'")
 
+        await _anyone_helper(ctx, all_members, member, role)
     else:
         await ctx.respond("Error: please add me to the server first!")
 
 @bot.slash_command(name = "anyone_rand", description = "Set the @anyone target to a random user")
 @commands.cooldown(1, 10, commands.BucketType.user) 
 async def set_anyone_rand(ctx):
+    # give us 15 minutes instead of 3 seconds to respond
+    await ctx.defer(ephemeral = False)
+
     # get the server
     server = ctx.guild
 
@@ -77,8 +84,7 @@ async def set_anyone_rand(ctx):
         if role:
             await _anyone_helper(ctx, all_members, member, role)
         else:
-            await ctx.respond("Error: no role named 'anyone'")
-        
+            ctx.respond("Error: unable to find role 'anyone'")
     else:
         await ctx.respond("Error: please add me to the server first!")
 
