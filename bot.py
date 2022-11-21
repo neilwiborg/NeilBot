@@ -15,41 +15,55 @@ bot = discord.Bot(activity = activity, allowed_mentions = allowed_mentions, inte
 async def on_ready():
     print(f"{bot.user} is ready and online!")
 
+async def _anyone_helper(ctx, all_members, member, role):
+    try:
+        # remove the 'anyone' role from everyone in the server
+        for m in all_members:
+            await m.remove_roles(role)
+
+        # add the 'anyone' role to the random user
+        await member.add_roles(role)
+        
+        await ctx.respond(f"Set {role.mention} to {member.mention}!")
+    except discord.Forbidden:
+        await ctx.respond("Error: please give me permission to manage roles!")
+    except discord.HTTPException:
+        await ctx.respond("Error: unable to execute command, please try later!")
+
 @bot.slash_command(name = "anyone_me", description = "Set the @anyone target to yourself")
 async def set_anyone_me(ctx):
     # get the caller
     member = ctx.author
-    # get all server members
-    all_members = ctx.guild.members
-    # get the 'anyone' role
-    role = discord.utils.get(ctx.guild.roles, name="anyone")
+    # get the server
+    server = ctx.guild
 
-    # remove the 'anyone' role from everyone in the server
-    for m in all_members:
-        await m.remove_roles(role)
+    # if the bot is not in the server
+    if server:
+        # get all server members
+        all_members = server.members
+        # get the 'anyone' role
+        role = discord.utils.get(server.roles, name="anyone")
 
-    # add the 'anyone' role to the caller
-    await member.add_roles(role)
-    
-    await ctx.respond(f"Set {role.mention} to {member.mention}!")
+        await _anyone_helper(ctx, all_members, member, role)
+    else:
+        await ctx.respond("Error: please add me to the server first!")
 
 @bot.slash_command(name = "anyone_rand", description = "Set the @anyone target to a random user")
 async def set_anyone_rand(ctx):
-    # get all server members
-    all_members = ctx.guild.members
-    # get the 'anyone' role
-    role = discord.utils.get(ctx.guild.roles, name="anyone")
+    # get the server
+    server = ctx.guild
 
-    # remove the 'anyone' role from everyone in the server
-    for m in all_members:
-        await m.remove_roles(role)
-    
-    # get a random user
-    member = random.choice(all_members)
+    # if the bot is not in the server
+    if server:
+        # get all server members
+        all_members = server.members
+        # get a random user
+        member = random.choice(all_members)
+        # get the 'anyone' role
+        role = discord.utils.get(ctx.guild.roles, name="anyone")
 
-    # add the 'anyone' role to the random user
-    await member.add_roles(role)
-    
-    await ctx.respond(f"Set {role.mention} to {member.mention}!")
+        await _anyone_helper(ctx, all_members, member, role)
+    else:
+        await ctx.respond("Error: please add me to the server first!")
 
 bot.run(token)
