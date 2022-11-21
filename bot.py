@@ -60,7 +60,6 @@ async def set_anyone_me(ctx):
         else:
             ctx.respond("Error: unable to find role 'anyone'")
 
-        await _anyone_helper(ctx, all_members, member, role)
     else:
         await ctx.respond("Error: please add me to the server first!")
 
@@ -85,6 +84,7 @@ async def set_anyone_rand(ctx):
             await _anyone_helper(ctx, all_members, member, role)
         else:
             ctx.respond("Error: unable to find role 'anyone'")
+
     else:
         await ctx.respond("Error: please add me to the server first!")
 
