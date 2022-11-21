@@ -1,6 +1,7 @@
 import os
 import random
 import discord
+from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,6 +15,13 @@ bot = discord.Bot(activity = activity, allowed_mentions = allowed_mentions, inte
 @bot.event
 async def on_ready():
     print(f"{bot.user} is ready and online!")
+
+@bot.event
+async def on_application_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.respond("This command is currently on cooldown!")
+    else:
+        raise error
 
 async def _anyone_helper(ctx, all_members, member, role):
     try:
@@ -31,6 +39,7 @@ async def _anyone_helper(ctx, all_members, member, role):
         await ctx.respond("Error: unable to execute command, please try later!")
 
 @bot.slash_command(name = "anyone_me", description = "Set the @anyone target to yourself")
+@commands.cooldown(1, 10, commands.BucketType.user) 
 async def set_anyone_me(ctx):
     # get the caller
     member = ctx.author
@@ -49,6 +58,7 @@ async def set_anyone_me(ctx):
         await ctx.respond("Error: please add me to the server first!")
 
 @bot.slash_command(name = "anyone_rand", description = "Set the @anyone target to a random user")
+@commands.cooldown(1, 10, commands.BucketType.user) 
 async def set_anyone_rand(ctx):
     # get the server
     server = ctx.guild
