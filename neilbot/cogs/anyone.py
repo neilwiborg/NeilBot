@@ -22,7 +22,7 @@ class Anyone(commands.Cog):
 			await ctx.respond("Error: unable to execute command, please try later!")
 
 	@discord.slash_command(name = "anyone_me", description = "Set the @anyone target to yourself")
-	@commands.cooldown(1, 10, commands.BucketType.user) 
+	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def set_anyone_me(self, ctx):
 		# give us 15 minutes instead of 3 seconds to respond
 		await ctx.defer(ephemeral = False)
