@@ -37,16 +37,16 @@ class Player(commands.Cog):
 
 		server = ctx.guild
 
-		channel = None
+		voice = None
 		for vc in voice_connections:
 			if vc.guild == server:
-				channel = vc
+				voice = vc
 				break
 		
-		if channel:
+		if voice:
 			await ctx.voice_client.disconnect()
 
-			await ctx.respond("Disconnected from voice channel")
+			await ctx.respond(f"Disconnected from {voice.channel.name}")
 		else:
 			await ctx.respond("Error: not connected to voice channel")		
 
