@@ -66,6 +66,7 @@ class Player(commands.Cog):
     @discord.slash_command(name="play", description="Play the YouTube video url")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def play_audio(self, ctx, url):
+		# setup options for YouTube downloader
         YDL_OPTIONS = {
             'format': 'bestaudio',
             'postprocessors': [{
@@ -85,16 +86,20 @@ class Player(commands.Cog):
         voice_channels = server.voice_channels
 
         # the voice channel we found the bot in
-        botVoiceChannel = self._getVoiceChannel(voice_channels)
+        botVoiceChannel = await self._getVoiceChannel(voice_channels)
 
+		# only play music if the bot is in a voice channel
         if botVoiceChannel:
             with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
+				# download the song from the url
                 ydl.download(url)
+			# get the server voice client
             voice_client = discord.utils.get(
                 self.bot.voice_clients, guild=server)
+			# check if a song is already playing
             if not voice_client.is_playing():
+				# play the downloaded song
                 voice_client.play(discord.FFmpegPCMAudio("song.mp3"))
-                voice_client.is_playing()
                 await ctx.respond(f"Now playing {url}")
             else:
                 await ctx.respond("Already playing song")
