@@ -33,12 +33,22 @@ class Player(commands.Cog):
 		# give us 15 minutes instead of 3 seconds to respond
 		await ctx.defer(ephemeral = False)
 
-		if ctx.voice_client:
+		voice_connections = self.bot.voice_clients
+
+		server = ctx.guild
+
+		channel = None
+		for vc in voice_connections:
+			if vc.guild == server:
+				channel = vc
+				break
+		
+		if channel:
 			await ctx.voice_client.disconnect()
 
 			await ctx.respond("Disconnected from voice channel")
 		else:
-			await ctx.respond("Error: not connected to voice channel")
+			await ctx.respond("Error: not connected to voice channel")		
 
 def setup(bot):
 	bot.add_cog(Player(bot))
