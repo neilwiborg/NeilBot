@@ -25,7 +25,6 @@ class Player(commands.Cog):
 				await ctx.respond(f"Unable to connect to {channel.name}, please try again later")
 		else:
 			await ctx.respond("Please join a choice channel first!")
-
 	
 	@discord.slash_command(name = "leave", description = "Have NeilBot leave your voice channel")
 	@commands.cooldown(1, 10, commands.BucketType.user)
@@ -33,22 +32,22 @@ class Player(commands.Cog):
 		# give us 15 minutes instead of 3 seconds to respond
 		await ctx.defer(ephemeral = False)
 
-		voice_connections = self.bot.voice_clients
-
 		server = ctx.guild
 
-		voice = None
-		for vc in voice_connections:
-			if vc.guild == server:
-				voice = vc
-				break
-		
-		if voice:
-			await ctx.voice_client.disconnect()
+		voice_channels = server.voice_channels
 
-			await ctx.respond(f"Disconnected from {voice.channel.name}")
+		foundVoiceChannel = None
+		for vc in voice_channels:
+			for m in vc.members:
+				if m == self.bot.user:
+					foundVoiceChannel = vc
+					break
+		
+		if foundVoiceChannel:
+			await server.voice_client.disconnect()
+			await ctx.respond(f"Disconnected from {foundVoiceChannel.name}")
 		else:
-			await ctx.respond("Error: not connected to voice channel")		
+			await ctx.respond("Error: not connected to voice channel")	
 
 def setup(bot):
 	bot.add_cog(Player(bot))
