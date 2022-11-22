@@ -14,6 +14,18 @@ This slash command will cause the bot to leave the voice channel it is connected
 
 This slash command will cause the bot to play audio from the YouTube url passed in.
 
+#### /stop
+
+This slash command will cause the bot to stop the audio.
+
+#### /pause
+
+This slash command will cause the bot to pause the audio.
+
+#### /resume
+
+This slash command will cause the bot to resume the audio.
+
 #### /anyone_me
 
 This slash command will set the 'anyone' role on your server to the user who executes this slash command and remove the role from all other users.
