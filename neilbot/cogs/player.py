@@ -61,7 +61,7 @@ class Player(commands.Cog):
             voice_client = discord.utils.get(
                 self.bot.voice_clients, guild=server)
             # check if a song is playing
-            if voice_client.is_playing():
+            if voice_client and voice_client.is_playing():
 				# stop the audio
                 voice_client.stop()
 				# discord won't recognize the audio has stopped unless we wait before disconnecting
