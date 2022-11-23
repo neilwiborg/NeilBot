@@ -119,7 +119,7 @@ class Player(commands.Cog):
             if not voice_client.is_playing():
                 # play the downloaded song
                 voice_client.play(FFmpegPCMAudio("song.mp3"))
-                await ctx.respond(f"Now playing {video['title']}")
+                await ctx.respond(f"Now playing **{video['title']}**")
             else:
                 await ctx.respond("Already playing song")
         else:
