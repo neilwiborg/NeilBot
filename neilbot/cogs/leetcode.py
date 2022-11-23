@@ -15,33 +15,59 @@ class Leetcode(commands.Cog):
         channel = ctx.channel
         threads = channel.threads
         # convert to lowercase and remove periods, so that we can get the problem number easily
-        problem_converted = problem.lower().translate(str.maketrans("", "", "."))
-        # the first word will either be the problem number or just a word. If it's a number,
-        # then we can compare that number with thread numbers.
-        problem_first_word = problem_converted.split(" ")[0]
+        problem = problem.lower().translate(str.maketrans("", "", "."))
+		# split the problem string into words
+        problem_words = problem.split(" ")
 
         # store all the possible thread matches in a list, since some problems may have
         # multiple thread discussions (duplicate threads)
         problem_threads = []
-        # check every thread in the channel
-        for th in threads:
-            # convert to lowercase and check if our problem is in the thread name
-            if problem_converted in th.name.lower():
+
+		# the first word will either be the problem number or just a word. If it's a number,
+        # then we can compare that number with thread numbers.
+        problem_number = problem_words[0] if problem_words[0].isdigit() else None
+        if problem_number:
+			# remove the problem number from the list of words
+            problem_words = problem_words[1:]
+			# recombine the words without the problem number
+            problem = " ".join(problem_words)
+            
+            # check every thread in the channel
+            for th in threads:
                 # convert the thread name to lowercase and remove periods, so that we can get
                 # the problem number easily. The 0th index will either be the problem number or
                 # just a word.
                 th_name_words = th.name.lower().translate(
                     str.maketrans("", "", ".")).split(" ")
-                # if both strings start with a problem number, then only add to the list if the numbers are equal
-                if th_name_words[0].isdigit() and problem_first_word.isdigit() and th_name_words[0] != problem_first_word:
-                    continue
-                    # add the possible match to our list
+                # if the thread name starts with a problem number and is the same number as
+                # the string passed in, then add it to the possible match list
+                if problem_number == th_name_words[0]:
+                    problem_threads.append(th)
+
+            if problem_threads:
+                # the best matching thread should be the one with the most discussion,
+                # i.e. the thread with the most messages
+                best_match = max(problem_threads, key=lambda x: x.message_count)
+                # if the thread has been archived, then unarchive it because discord
+                # has trouble loading messages in archived threads
+                await best_match.unarchive()
+                # send a url to the matched thread
+                await ctx.respond(f"Found problem thread: {best_match.jump_url}")
+                return
+
+        # check every thread in the channel
+        for th in threads:
+            # convert the thread name to lowercase for better comparison.
+            th_name = th.name.lower()
+            # if the thread name contains the string passed in,
+            # then add it to the possible match list
+            if problem in th_name:
                 problem_threads.append(th)
 
         if problem_threads:
-            # the best matching thread should be the one with the most discussion,
-            # i.e. the thread with the most messages
-            best_match = max(problem_threads, key=lambda x: x.message_count)
+            # the best matching thread should be the one with the shortest name,
+            # since threads with more words are likely other problem variants.
+            best_match = min(problem_threads, key=lambda x: len(x.name))
             # if the thread has been archived, then unarchive it because discord
             # has trouble loading messages in archived threads
             await best_match.unarchive()
