@@ -108,8 +108,13 @@ class Player(commands.Cog):
                     video = ydl.extract_info(url_or_search, download=False)
                 except:
                     # if it is not a url, then perform a search and choose the first result
-                    video = ydl.extract_info(f"ytsearch:{url_or_search}", download=False)[
-                        'entries'][0]
+                    search_results = ydl.extract_info(f"ytsearch:{url_or_search}", download=False)[
+                        'entries']
+                    if search_results:
+                        video = search_results[0]
+                    else:
+                        await ctx.respond("Error: unable to find any matching videos")
+                        return
                 # download the song from the url
                 ydl.download(video['webpage_url'])
                 # get the server voice client
