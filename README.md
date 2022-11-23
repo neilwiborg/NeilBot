@@ -2,6 +2,10 @@
 
 This project is a bot for Discord that includes functionality that I find entertaining.
 
+#### /lc_thread `<problem>`
+
+This slash command searches the current channel for leetcode threads that contain `<problem>` in the thread name.
+
 #### /join
 
 This slash command will cause the bot to join the same voice channel as the user.
