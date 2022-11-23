@@ -10,9 +10,9 @@ This slash command will cause the bot to join the same voice channel as the user
 
 This slash command will cause the bot to leave the voice channel it is connected to.
 
-#### /play `<url>`
+#### /play `<url_or_search>`
 
-This slash command will cause the bot to play audio from the YouTube url passed in.
+This slash command will cause the bot to play audio from the YouTube url or search passed in.
 
 #### /stop
 
