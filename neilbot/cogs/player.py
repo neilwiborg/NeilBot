@@ -1,5 +1,7 @@
 import asyncio
+import requests
 import discord
+from discord import FFmpegPCMAudio
 from discord.ext import commands
 import yt_dlp
 
@@ -62,9 +64,9 @@ class Player(commands.Cog):
                 self.bot.voice_clients, guild=server)
             # check if a song is playing
             if voice_client and voice_client.is_playing():
-				# stop the audio
+                # stop the audio
                 voice_client.stop()
-				# discord won't recognize the audio has stopped unless we wait before disconnecting
+                # discord won't recognize the audio has stopped unless we wait before disconnecting
                 await asyncio.sleep(1)
             # disconnect the bot in this server
             await server.voice_client.disconnect()
@@ -74,7 +76,7 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="play", description="Play the YouTube video url")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def play_audio(self, ctx, url):
+    async def play_audio(self, ctx, url_or_search):
         # setup options for YouTube downloader
         YDL_OPTIONS = {
             'format': 'bestaudio',
@@ -100,16 +102,24 @@ class Player(commands.Cog):
         # only play music if the bot is in a voice channel
         if botVoiceChannel:
             with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
+                try:
+                    # attempt to get the video if it is a url
+                    requests.get(url_or_search)
+                    video = ydl.extract_info(url_or_search, download=False)
+                except:
+                    # if it is not a url, then perform a search and choose the first result
+                    video = ydl.extract_info(f"ytsearch:{url_or_search}", download=False)[
+                        'entries'][0]
                 # download the song from the url
-                ydl.download(url)
+                ydl.download(video['webpage_url'])
                 # get the server voice client
             voice_client = discord.utils.get(
                 self.bot.voice_clients, guild=server)
             # check if a song is already playing
             if not voice_client.is_playing():
                 # play the downloaded song
-                voice_client.play(discord.FFmpegPCMAudio("song.mp3"))
-                await ctx.respond(f"Now playing {url}")
+                voice_client.play(FFmpegPCMAudio("song.mp3"))
+                await ctx.respond(f"Now playing {video['title']}")
             else:
                 await ctx.respond("Already playing song")
         else:
