@@ -74,7 +74,8 @@ class Player(commands.Cog):
         else:
             await ctx.respond("Error: not connected to voice channel")
 
-    @discord.slash_command(name="play", description="Play the YouTube video url")
+    @discord.slash_command(name="play",
+        description="Play the YouTube video url or first search result")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def play_audio(self, ctx, url_or_search):
         # setup options for YouTube downloader
