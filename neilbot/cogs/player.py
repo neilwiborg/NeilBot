@@ -156,7 +156,7 @@ class Player(commands.Cog):
             if voice_client.is_playing():
                 # stop the audio
                 voice_client.stop()
-                await ctx.respond(f"Stopped playing audio")
+                await ctx.respond("Stopped playing audio")
             else:
                 await ctx.respond("Error: no audio is playing")
         else:
@@ -185,7 +185,7 @@ class Player(commands.Cog):
             if voice_client.is_playing():
                 # pause the audio
                 voice_client.pause()
-                await ctx.respond(f"Paused audio. Use /resume to continue playing")
+                await ctx.respond("Paused audio. Use /resume to continue playing")
             else:
                 await ctx.respond("Error: no audio is playing")
         else:
@@ -214,7 +214,7 @@ class Player(commands.Cog):
             if not voice_client.is_playing():
                 # resume the audio
                 voice_client.resume()
-                await ctx.respond(f"Resumed playing audio")
+                await ctx.respond("Resumed playing audio")
             else:
                 await ctx.respond("Error: audio is already playing")
         else:
