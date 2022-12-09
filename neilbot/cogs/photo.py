@@ -27,7 +27,10 @@ class Photo(commands.Cog):
         # save the URL used for accessing the UWB webcam
         UWB_WEBCAM_URL = "http://69.91.192.220/netcam.jpg"
 
-        image = self._download_photo(UWB_WEBCAM_URL)
+        # give us 15 minutes instead of 3 seconds to respond
+        await ctx.defer(ephemeral=False)
+
+        image = await self._download_photo(UWB_WEBCAM_URL)
         if image:
             await ctx.respond("UWB rn:", file=discord.File(image, filename="netcam.jpg"))
         else:
