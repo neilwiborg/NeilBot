@@ -1,8 +1,9 @@
+import discord
 from discord.ext import commands
 
 
 class Events(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
 
     @commands.Cog.listener()
@@ -17,5 +18,5 @@ class Events(commands.Cog):
             raise error
 
 
-def setup(bot):
+def setup(bot: discord.Bot):
     bot.add_cog(Events(bot))

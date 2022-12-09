@@ -3,12 +3,12 @@ from discord.ext import commands
 
 
 class Leetcode(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
 
     @discord.slash_command(name="lc_thread", description="Find the Leetcode thread for a problem")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def find_lc_thread(self, ctx, problem):
+    async def find_lc_thread(self, ctx: discord.ApplicationContext, problem: str) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=True)
 
@@ -77,5 +77,5 @@ class Leetcode(commands.Cog):
             await ctx.respond("Didn't find problem thread")
 
 
-def setup(bot):
+def setup(bot: discord.Bot):
     bot.add_cog(Leetcode(bot))

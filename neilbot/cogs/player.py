@@ -1,4 +1,6 @@
 import asyncio
+from typing import List
+from typing import Optional
 import requests
 import discord
 from discord import FFmpegPCMAudio
@@ -7,10 +9,10 @@ import yt_dlp
 
 
 class Player(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
 
-    async def _getVoiceChannel(self, voice_channels):
+    async def _getVoiceChannel(self, voice_channels: List[discord.VoiceChannel]) -> Optional[discord.VoiceChannel]:
         # iterate through every voice channel on the server
         for vc in voice_channels:
             # iterate through every member currently connected to the voice channel
@@ -23,7 +25,7 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="join", description="Have NeilBot join your voice channel")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def join_voice(self, ctx):
+    async def join_voice(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -45,7 +47,7 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="leave", description="Have NeilBot leave your voice channel")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def leave_voice(self, ctx):
+    async def leave_voice(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -77,7 +79,7 @@ class Player(commands.Cog):
     @discord.slash_command(name="play",
         description="Play the YouTube video url or first search result")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def play_audio(self, ctx, url_or_search):
+    async def play_audio(self, ctx: discord.ApplicationContext, url_or_search: str) -> None:
         # setup options for YouTube downloader
         YDL_OPTIONS = {
             'format': 'bestaudio',
@@ -133,7 +135,7 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="stop", description="Stop the currently playing audio")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def stop_audio(self, ctx):
+    async def stop_audio(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -162,7 +164,7 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="pause", description="Pause the currently playing audio")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def pause_audio(self, ctx):
+    async def pause_audio(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -191,7 +193,7 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="resume", description="Resume the paused audio")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def resume_audio(self, ctx):
+    async def resume_audio(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -219,5 +221,5 @@ class Player(commands.Cog):
             await ctx.respond("Bot not in a voice channel!")
 
 
-def setup(bot):
+def setup(bot: discord.Bot):
     bot.add_cog(Player(bot))

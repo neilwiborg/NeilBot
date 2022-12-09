@@ -6,7 +6,7 @@ from discord.ext import commands
 
 
 class Photo(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
     
     async def _download_photo(self, url: str) -> Optional[BytesIO]:
@@ -37,5 +37,5 @@ class Photo(commands.Cog):
             await ctx.respond("Error: unable to download photo")
 
 
-def setup(bot):
+def setup(bot: discord.Bot):
     bot.add_cog(Photo(bot))

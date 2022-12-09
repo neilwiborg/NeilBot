@@ -1,13 +1,14 @@
 import random
+from typing import List
 import discord
 from discord.ext import commands
 
 
 class Anyone(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
 
-    async def _anyone_helper(self, ctx, all_members, member, role):
+    async def _anyone_helper(self, ctx: discord.ApplicationContext, all_members: List[discord.Member], member: discord.Member, role: discord.Role) -> None:
         try:
             # remove the 'anyone' role from everyone in the server
             for m in all_members:
@@ -24,7 +25,7 @@ class Anyone(commands.Cog):
 
     @discord.slash_command(name="anyone_me", description="Set the @anyone target to yourself")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def set_anyone_me(self, ctx):
+    async def set_anyone_me(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -49,7 +50,7 @@ class Anyone(commands.Cog):
 
     @discord.slash_command(name="anyone_rand", description="Set the @anyone target to a random user")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def set_anyone_rand(self, ctx):
+    async def set_anyone_rand(self, ctx: discord.ApplicationContext) -> None:
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -73,5 +74,5 @@ class Anyone(commands.Cog):
             await ctx.respond("Error: please add me to the server first!")
 
 
-def setup(bot):
+def setup(bot: discord.Bot):
     bot.add_cog(Anyone(bot))
