@@ -7,11 +7,11 @@ class Events(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         print(f"{self.bot.user} is ready and online!")
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException):
+    async def on_application_command_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException) -> None:
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.respond("This command is currently on cooldown!")
         else:
