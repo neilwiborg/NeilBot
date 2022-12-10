@@ -5,10 +5,29 @@ from discord.ext import commands
 
 
 class Anyone(commands.Cog):
+    """Discord Bot cog that includes slash commands for setting the Anyone role.
+
+    Attributes:
+        bot (discord.Bot): the instance of the Discord bot this cog is added to
+    """
+
     def __init__(self, bot: discord.Bot):
+        """Inits the Anyone cog.
+
+        Args:
+            bot (discord.Bot): the Discord bot this cog is being added to
+        """
         self.bot = bot
 
     async def _anyone_helper(self, ctx: discord.ApplicationContext, all_members: List[discord.Member], member: discord.Member, role: discord.Role) -> None:
+        """Helper method to remove a role from all server members and add a role to one member.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+            all_members (List[discord.Member]): all server members
+            member (discord.Member): a specific server member to add a role to
+            role (discord.Role): the role to add to one member
+        """
         try:
             # remove the 'anyone' role from everyone in the server
             for m in all_members:
@@ -26,6 +45,11 @@ class Anyone(commands.Cog):
     @discord.slash_command(name="anyone_me", description="Set the @anyone target to yourself")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def set_anyone_me(self, ctx: discord.ApplicationContext) -> None:
+        """Sets the @anyone role to the user calling this slash command.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+        """
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -51,6 +75,11 @@ class Anyone(commands.Cog):
     @discord.slash_command(name="anyone_rand", description="Set the @anyone target to a random user")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def set_anyone_rand(self, ctx: discord.ApplicationContext) -> None:
+        """Sets the @anyone role to a random user on the server.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+        """
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -74,5 +103,10 @@ class Anyone(commands.Cog):
             await ctx.respond("Error: please add me to the server first!")
 
 
-def setup(bot: discord.Bot):
+def setup(bot: discord.Bot) -> None:
+    """Attach the Anyone cog to a Discord bot.
+
+    Args:
+        bot (discord.Bot): the Discord bot to add the Anyone cog to
+    """
     bot.add_cog(Anyone(bot))

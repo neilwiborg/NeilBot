@@ -3,12 +3,29 @@ from discord.ext import commands
 
 
 class Leetcode(commands.Cog):
+    """Discord Bot cog that includes slash commands for Leetcode problems.
+
+    Attributes:
+        bot (discord.Bot): the instance of the Discord bot this cog is added to
+    """
+
     def __init__(self, bot: discord.Bot):
+        """Inits the Leetcode cog.
+
+        Args:
+            bot (discord.Bot): the Discord bot this cog is being added to
+        """
         self.bot = bot
 
     @discord.slash_command(name="lc_thread", description="Find the Leetcode thread for a problem")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def find_lc_thread(self, ctx: discord.ApplicationContext, problem: str) -> None:
+        """Finds a Leetcode thread that most closely matches the problem query.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+            problem (str): a query string for a Leetcode problem thread
+        """
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=True)
 
@@ -77,5 +94,10 @@ class Leetcode(commands.Cog):
             await ctx.respond("Didn't find problem thread")
 
 
-def setup(bot: discord.Bot):
+def setup(bot: discord.Bot) -> None:
+    """Attach the Leetcode cog to a Discord bot.
+
+    Args:
+        bot (discord.Bot): the Discord bot to add the Leetcode cog to
+    """
     bot.add_cog(Leetcode(bot))
