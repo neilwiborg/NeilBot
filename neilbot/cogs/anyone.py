@@ -19,7 +19,13 @@ class Anyone(commands.Cog):
         """
         self.bot = bot
 
-    async def _anyone_helper(self, ctx: discord.ApplicationContext, all_members: List[discord.Member], member: discord.Member, role: discord.Role) -> None:
+    async def _anyone_helper(
+        self,
+        ctx: discord.ApplicationContext,
+        all_members: List[discord.Member],
+        member: discord.Member,
+        role: discord.Role,
+    ) -> None:
         """Helper method to remove a role from all server members and add a role to one member.
 
         Args:
@@ -42,7 +48,9 @@ class Anyone(commands.Cog):
         except discord.HTTPException:
             await ctx.respond("Error: unable to execute command, please try later!")
 
-    @discord.slash_command(name="anyone_me", description="Set the @anyone target to yourself")
+    @discord.slash_command(
+        name="anyone_me", description="Set the @anyone target to yourself"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def set_anyone_me(self, ctx: discord.ApplicationContext) -> None:
         """Sets the @anyone role to the user calling this slash command.
@@ -72,7 +80,9 @@ class Anyone(commands.Cog):
         else:
             await ctx.respond("Error: please add me to the server first!")
 
-    @discord.slash_command(name="anyone_rand", description="Set the @anyone target to a random user")
+    @discord.slash_command(
+        name="anyone_rand", description="Set the @anyone target to a random user"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def set_anyone_rand(self, ctx: discord.ApplicationContext) -> None:
         """Sets the @anyone role to a random user on the server.

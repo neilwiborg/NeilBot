@@ -42,7 +42,9 @@ class Photo(commands.Cog):
                     return image
         return None
 
-    @discord.slash_command(name="photo_uwb", description="Take a photograph of UW Bothell")
+    @discord.slash_command(
+        name="photo_uwb", description="Take a photograph of UW Bothell"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def take_photo_uwb(self, ctx: discord.ApplicationContext) -> None:
         """Downloads a photo of the UW Bothell campus at the time the command is executed and
@@ -60,7 +62,9 @@ class Photo(commands.Cog):
 
         image = await self._download_photo(UWB_WEBCAM_URL)
         if image:
-            await ctx.respond("UWB rn:", file=discord.File(image, filename="netcam.jpg"))
+            await ctx.respond(
+                "UWB rn:", file=discord.File(image, filename="netcam.jpg")
+            )
         else:
             await ctx.respond("Error: unable to download photo")
 

@@ -17,9 +17,13 @@ class Leetcode(commands.Cog):
         """
         self.bot = bot
 
-    @discord.slash_command(name="lc_thread", description="Find the Leetcode thread for a problem")
+    @discord.slash_command(
+        name="lc_thread", description="Find the Leetcode thread for a problem"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def find_lc_thread(self, ctx: discord.ApplicationContext, problem: str) -> None:
+    async def find_lc_thread(
+        self, ctx: discord.ApplicationContext, problem: str
+    ) -> None:
         """Finds a Leetcode thread that most closely matches the problem query.
 
         Args:
@@ -33,20 +37,20 @@ class Leetcode(commands.Cog):
         threads = channel.threads
         # convert to lowercase and remove periods, so that we can get the problem number easily
         problem = problem.lower().translate(str.maketrans("", "", "."))
-		# split the problem string into words
+        # split the problem string into words
         problem_words = problem.split(" ")
 
         # store all the possible thread matches in a list, since some problems may have
         # multiple thread discussions (duplicate threads)
         problem_threads = []
 
-		# the first word will either be the problem number or just a word. If it's a number,
+        # the first word will either be the problem number or just a word. If it's a number,
         # then we can compare that number with thread numbers.
         problem_number = problem_words[0] if problem_words[0].isdigit() else None
         if problem_number:
-			# remove the problem number from the list of words
+            # remove the problem number from the list of words
             problem_words = problem_words[1:]
-			# recombine the words without the problem number
+            # recombine the words without the problem number
             problem = " ".join(problem_words)
 
             # check every thread in the channel
@@ -54,8 +58,9 @@ class Leetcode(commands.Cog):
                 # convert the thread name to lowercase and remove periods, so that we can get
                 # the problem number easily. The 0th index will either be the problem number or
                 # just a word.
-                th_name_words = th.name.lower().translate(
-                    str.maketrans("", "", ".")).split(" ")
+                th_name_words = (
+                    th.name.lower().translate(str.maketrans("", "", ".")).split(" ")
+                )
                 # if the thread name starts with a problem number and is the same number as
                 # the string passed in, then add it to the possible match list
                 if problem_number == th_name_words[0]:

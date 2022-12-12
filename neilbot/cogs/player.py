@@ -23,7 +23,9 @@ class Player(commands.Cog):
         """
         self.bot = bot
 
-    async def _getVoiceChannel(self, voice_channels: List[discord.VoiceChannel]) -> Optional[discord.VoiceChannel]:
+    async def _getVoiceChannel(
+        self, voice_channels: List[discord.VoiceChannel]
+    ) -> Optional[discord.VoiceChannel]:
         """Gets the voice channel that the bot is currently in.
 
         Args:
@@ -43,7 +45,9 @@ class Player(commands.Cog):
                     return vc
         return None
 
-    @discord.slash_command(name="join", description="Have NeilBot join your voice channel")
+    @discord.slash_command(
+        name="join", description="Have NeilBot join your voice channel"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def join_voice(self, ctx: discord.ApplicationContext) -> None:
         """Have the bot join a voice channel.
@@ -66,11 +70,15 @@ class Player(commands.Cog):
             except discord.ClientException:
                 await ctx.respond(f"Already connected to {channel.name}!")
             except (asyncio.TimeoutError, discord.opus.OpusNotLoaded):
-                await ctx.respond(f"Unable to connect to {channel.name}, please try again later")
+                await ctx.respond(
+                    f"Unable to connect to {channel.name}, please try again later"
+                )
         else:
             await ctx.respond("Please join a voice channel first!")
 
-    @discord.slash_command(name="leave", description="Have NeilBot leave your voice channel")
+    @discord.slash_command(
+        name="leave", description="Have NeilBot leave your voice channel"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def leave_voice(self, ctx: discord.ApplicationContext) -> None:
         """Have the bot leave a voice channel.
@@ -92,8 +100,7 @@ class Player(commands.Cog):
         # if we found the bot in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(
-                self.bot.voice_clients, guild=server)
+            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
             # check if a song is playing
             if voice_client and voice_client.is_playing():
                 # stop the audio
@@ -106,10 +113,13 @@ class Player(commands.Cog):
         else:
             await ctx.respond("Error: not connected to voice channel")
 
-    @discord.slash_command(name="play",
-        description="Play the YouTube video url or first search result")
+    @discord.slash_command(
+        name="play", description="Play the YouTube video url or first search result"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def play_audio(self, ctx: discord.ApplicationContext, url_or_search: str) -> None:
+    async def play_audio(
+        self, ctx: discord.ApplicationContext, url_or_search: str
+    ) -> None:
         """Play audio from YouTube from either a URL or a search query.
 
         Args:
@@ -118,13 +128,15 @@ class Player(commands.Cog):
         """
         # setup options for YouTube downloader
         YDL_OPTIONS = {
-            'format': 'bestaudio',
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '192',
-            }],
-            'outtmpl': 'song.%(ext)s',
+            "format": "bestaudio",
+            "postprocessors": [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }
+            ],
+            "outtmpl": "song.%(ext)s",
         }
 
         # give us 15 minutes instead of 3 seconds to respond
@@ -147,18 +159,18 @@ class Player(commands.Cog):
                     video = ydl.extract_info(url_or_search, download=False)
                 except:
                     # if it is not a url, then perform a search and choose the first result
-                    search_results = ydl.extract_info(f"ytsearch:{url_or_search}", download=False)[
-                        'entries']
+                    search_results = ydl.extract_info(
+                        f"ytsearch:{url_or_search}", download=False
+                    )["entries"]
                     if search_results:
                         video = search_results[0]
                     else:
                         await ctx.respond("Error: unable to find any matching videos")
                         return
                 # download the song from the url
-                ydl.download(video['webpage_url'])
+                ydl.download(video["webpage_url"])
                 # get the server voice client
-            voice_client = discord.utils.get(
-                self.bot.voice_clients, guild=server)
+            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
             # check if a song is already playing
             if not voice_client.is_playing():
                 # play the downloaded song
@@ -191,8 +203,7 @@ class Player(commands.Cog):
         # only stop the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(
-                self.bot.voice_clients, guild=server)
+            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
             # check if a song is playing
             if voice_client.is_playing():
                 # stop the audio
@@ -203,7 +214,9 @@ class Player(commands.Cog):
         else:
             await ctx.respond("Bot not in a voice channel!")
 
-    @discord.slash_command(name="pause", description="Pause the currently playing audio")
+    @discord.slash_command(
+        name="pause", description="Pause the currently playing audio"
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def pause_audio(self, ctx: discord.ApplicationContext) -> None:
         """Pause any audio currently playing from the bot.
@@ -225,8 +238,7 @@ class Player(commands.Cog):
         # only pause the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(
-                self.bot.voice_clients, guild=server)
+            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
             # check if a song is playing
             if voice_client.is_playing():
                 # pause the audio
@@ -259,8 +271,7 @@ class Player(commands.Cog):
         # only resume the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(
-                self.bot.voice_clients, guild=server)
+            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
             # check if a song is playing
             if not voice_client.is_playing():
                 # resume the audio

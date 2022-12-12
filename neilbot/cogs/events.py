@@ -23,7 +23,9 @@ class Events(commands.Cog):
         print(f"{self.bot.user} is ready and online!")
 
     @commands.Cog.listener()
-    async def on_application_command_error(self, ctx: discord.ApplicationContext, error: discord.DiscordException) -> None:
+    async def on_application_command_error(
+        self, ctx: discord.ApplicationContext, error: discord.DiscordException
+    ) -> None:
         """Handles errors from bot slash commands.
 
         If the error is caused by a command being on cooldown, then prints an error message.
