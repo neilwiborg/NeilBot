@@ -75,7 +75,7 @@ class Anyone(commands.Cog):
             if role:
                 await self._anyone_helper(ctx, all_members, member, role)
             else:
-                ctx.respond("Error: unable to find role 'anyone'")
+                await ctx.respond("Error: unable to find role 'anyone'")
 
         else:
             await ctx.respond("Error: please add me to the server first!")
@@ -107,7 +107,7 @@ class Anyone(commands.Cog):
             if role:
                 await self._anyone_helper(ctx, all_members, member, role)
             else:
-                ctx.respond("Error: unable to find role 'anyone'")
+                await ctx.respond("Error: unable to find role 'anyone'")
 
         else:
             await ctx.respond("Error: please add me to the server first!")
