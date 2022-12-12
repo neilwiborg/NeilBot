@@ -19,7 +19,7 @@ class Photo(commands.Cog):
             bot (discord.Bot): the Discord bot this cog is being added to
         """
         self.bot = bot
-    
+
     async def _download_photo(self, url: str) -> Optional[BytesIO]:
         """Download a photo from the provided URL. Assumes that the
         URL is a valid URL to a photo.

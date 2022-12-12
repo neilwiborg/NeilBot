@@ -48,7 +48,7 @@ class Leetcode(commands.Cog):
             problem_words = problem_words[1:]
 			# recombine the words without the problem number
             problem = " ".join(problem_words)
-            
+
             # check every thread in the channel
             for th in threads:
                 # convert the thread name to lowercase and remove periods, so that we can get
