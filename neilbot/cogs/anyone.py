@@ -30,7 +30,7 @@ class Anyone(commands.Cog):
 
         Args:
             ctx (discord.ApplicationContext): the Discord application context
-            all_members (List[discord.Member]): all server members
+            all_members (list[discord.Member]): all server members
             member (discord.Member): a specific server member to add a role to
             role (discord.Role): the role to add to one member
         """
