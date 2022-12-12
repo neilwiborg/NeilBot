@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import Optional
+
 import aiohttp
 import discord
 from discord.ext import commands
@@ -20,7 +20,7 @@ class Photo(commands.Cog):
         """
         self.bot = bot
 
-    async def _download_photo(self, url: str) -> Optional[BytesIO]:
+    async def _download_photo(self, url: str) -> BytesIO | None:
         """Download a photo from the provided URL. Assumes that the
         URL is a valid URL to a photo.
 

@@ -1,5 +1,5 @@
 import random
-from typing import List
+
 import discord
 from discord.ext import commands
 
@@ -22,7 +22,7 @@ class Anyone(commands.Cog):
     async def _anyone_helper(
         self,
         ctx: discord.ApplicationContext,
-        all_members: List[discord.Member],
+        all_members: list[discord.Member],
         member: discord.Member,
         role: discord.Role,
     ) -> None:

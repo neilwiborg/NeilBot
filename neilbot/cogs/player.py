@@ -1,11 +1,10 @@
 import asyncio
-from typing import List
-from typing import Optional
-import requests
+
 import discord
+import requests
+import yt_dlp
 from discord import FFmpegPCMAudio
 from discord.ext import commands
-import yt_dlp
 
 
 class Player(commands.Cog):
@@ -24,8 +23,8 @@ class Player(commands.Cog):
         self.bot = bot
 
     async def _getVoiceChannel(
-        self, voice_channels: List[discord.VoiceChannel]
-    ) -> Optional[discord.VoiceChannel]:
+        self, voice_channels: list[discord.VoiceChannel]
+    ) -> discord.VoiceChannel | None:
         """Gets the voice channel that the bot is currently in.
 
         Args:
