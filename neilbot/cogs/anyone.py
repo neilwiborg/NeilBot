@@ -26,7 +26,7 @@ class Anyone(commands.Cog):
         member: discord.Member,
         role: discord.Role,
     ) -> None:
-        """Helper method to remove a role from all server members and add a role to one member.
+        """Remove a role from all server members and add a role to one member.
 
         Args:
             ctx (discord.ApplicationContext): the Discord application context

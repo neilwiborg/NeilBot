@@ -28,8 +28,8 @@ class Photo(commands.Cog):
             url (str): the URL to download from
 
         Returns:
-            Optional[BytesIO]: the image in bytes. If an error occurred while downloading,
-            then None is returned.
+            BytesIO | None: the image in bytes. If an error occurred while
+            downloading, then None is returned.
         """
         # start an aiohttp client session
         async with aiohttp.ClientSession() as session:
@@ -47,9 +47,11 @@ class Photo(commands.Cog):
     )
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def take_photo_uwb(self, ctx: discord.ApplicationContext) -> None:
-        """Downloads a photo of the UW Bothell campus at the time the command is executed and
-        posts the photo. If an error occurs while downloading the photo, then an error message
-        is sent instead.
+        """Downloads and posts a photo of the UW Bothell campus.
+
+        Downloads a photo of the UW Bothell campus at the time the command is
+        executed and posts the photo. If an error occurs while downloading the
+        photo, then an error message is sent instead.
 
         Args:
             ctx (discord.ApplicationContext): the Discord application context

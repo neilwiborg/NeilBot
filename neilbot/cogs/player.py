@@ -28,11 +28,11 @@ class Player(commands.Cog):
         """Gets the voice channel that the bot is currently in.
 
         Args:
-            voice_channels (List[discord.VoiceChannel]): all voice channels on a server
+            voice_channels (list[discord.VoiceChannel]): all voice channels on a server
 
         Returns:
-            Optional[discord.VoiceChannel]: the voice channel the bot is in, or None if the bot is
-            not found in a voice channel.
+            discord.VoiceChannel | None: the voice channel the bot is in, or None
+            if the bot is not found in a voice channel.
         """
         # iterate through every voice channel on the server
         for vc in voice_channels:
@@ -104,7 +104,8 @@ class Player(commands.Cog):
             if voice_client and voice_client.is_playing():
                 # stop the audio
                 voice_client.stop()
-                # discord won't recognize the audio has stopped unless we wait before disconnecting
+                # discord won't recognize the audio has stopped unless we wait
+                # before disconnecting
                 await asyncio.sleep(1)
             # disconnect the bot in this server
             await server.voice_client.disconnect()
@@ -156,8 +157,11 @@ class Player(commands.Cog):
                     # attempt to get the video if it is a url
                     requests.get(url_or_search)
                     video = ydl.extract_info(url_or_search, download=False)
-                except:
-                    # if it is not a url, then perform a search and choose the first result
+                # TODO: improve to handle each specific exception:
+                # https://tinyurl.com/5anp2rdr
+                except requests.exceptions.RequestException:
+                    # if it is not a url, then perform a search and choose
+                    # the first result
                     search_results = ydl.extract_info(
                         f"ytsearch:{url_or_search}", download=False
                     )["entries"]

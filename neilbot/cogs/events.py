@@ -28,7 +28,8 @@ class Events(commands.Cog):
     ) -> None:
         """Handles errors from bot slash commands.
 
-        If the error is caused by a command being on cooldown, then prints an error message.
+        If the error is caused by a command being on cooldown, then prints an
+        error message.
 
         Args:
             ctx (discord.ApplicationContext): the Discord application context
