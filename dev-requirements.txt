@@ -8,3 +8,4 @@ flake8>=6.0.0,<7
 flake8-typing-imports==1.14.0
 mccabe==0.7.0
 mypy>=0.991,<1
+vulture>=2.6,<3
