@@ -99,7 +99,9 @@ class Player(commands.Cog):
         # if we found the bot in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
+            voice_client: discord.VoiceClient | None = discord.utils.get(
+                self.bot.voice_clients, guild=server
+            )
             # check if a song is playing
             if voice_client and voice_client.is_playing():
                 # stop the audio
@@ -173,7 +175,9 @@ class Player(commands.Cog):
                 # download the song from the url
                 ydl.download(video["webpage_url"])
                 # get the server voice client
-            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
+            voice_client: discord.VoiceClient | None = discord.utils.get(
+                self.bot.voice_clients, guild=server
+            )
             # check if a song is already playing
             if not voice_client.is_playing():
                 # play the downloaded song
@@ -206,7 +210,9 @@ class Player(commands.Cog):
         # only stop the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
+            voice_client: discord.VoiceClient | None = discord.utils.get(
+                self.bot.voice_clients, guild=server
+            )
             # check if a song is playing
             if voice_client.is_playing():
                 # stop the audio
@@ -241,7 +247,9 @@ class Player(commands.Cog):
         # only pause the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
+            voice_client: discord.VoiceClient | None = discord.utils.get(
+                self.bot.voice_clients, guild=server
+            )
             # check if a song is playing
             if voice_client.is_playing():
                 # pause the audio
@@ -274,7 +282,9 @@ class Player(commands.Cog):
         # only resume the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client = discord.utils.get(self.bot.voice_clients, guild=server)
+            voice_client: discord.VoiceClient | None = discord.utils.get(
+                self.bot.voice_clients, guild=server
+            )
             # check if a song is playing
             if not voice_client.is_playing():
                 # resume the audio

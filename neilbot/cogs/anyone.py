@@ -71,7 +71,7 @@ class Anyone(commands.Cog):
             # get all server members
             all_members = server.members
             # get the 'anyone' role
-            role = discord.utils.get(server.roles, name="anyone")
+            role: discord.Role | None = discord.utils.get(server.roles, name="anyone")
             if role:
                 await self._anyone_helper(ctx, all_members, member, role)
             else:
@@ -103,7 +103,9 @@ class Anyone(commands.Cog):
             # get a random user
             member = random.choice(all_members)
             # get the 'anyone' role
-            role = discord.utils.get(ctx.guild.roles, name="anyone")
+            role: discord.Role | None = discord.utils.get(
+                ctx.guild.roles, name="anyone"
+            )
             if role:
                 await self._anyone_helper(ctx, all_members, member, role)
             else:
