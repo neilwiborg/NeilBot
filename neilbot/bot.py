@@ -4,7 +4,9 @@ import discord
 from dotenv import load_dotenv
 
 
-def main():
+def main() -> None:
+    """Starts up the Discord bot and sets initial bot values."""
+
     load_dotenv()
     discord_token = str(os.getenv("DISCORD_TOKEN"))
 
