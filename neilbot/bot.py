@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 def main():
     load_dotenv()
-    token = str(os.getenv("TOKEN"))
+    token = str(os.getenv("DISCORD_TOKEN"))
 
     activity = discord.Game(name="Leetcode")
     allowed_mentions = discord.AllowedMentions.all()
