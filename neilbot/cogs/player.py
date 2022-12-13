@@ -1,4 +1,5 @@
 import asyncio
+from typing import cast
 
 import discord
 import requests
@@ -43,6 +44,26 @@ class Player(commands.Cog):
                     # set the status so we know the bot was found and stop looking
                     return vc
         return None
+
+    def _getVoiceClient(self, server: discord.Guild) -> discord.VoiceClient | None:
+        """Gets the voice client for the server.
+
+        Searches the list of voice clients that the bot is connected to,
+        and finds the one for the given server.
+
+        Args:
+            server (discord.guild): the Discord server the bot is in
+
+        Returns:
+            discord.VoiceClient | None: The voice client for the server, or None if
+            the bot is not currently connected to a voice client in the server
+        """
+        # need to cast because the voice_client list uses VoiceProtocol,
+        # the super class
+        return cast(
+            discord.VoiceClient | None,
+            discord.utils.get(self.bot.voice_clients, guild=server),
+        )
 
     @discord.slash_command(
         name="join", description="Have NeilBot join your voice channel"
@@ -99,9 +120,7 @@ class Player(commands.Cog):
         # if we found the bot in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client: discord.VoiceClient | None = discord.utils.get(
-                self.bot.voice_clients, guild=server
-            )
+            voice_client = self._getVoiceClient(server)
             # check if a song is playing
             if voice_client and voice_client.is_playing():
                 # stop the audio
@@ -175,11 +194,9 @@ class Player(commands.Cog):
                 # download the song from the url
                 ydl.download(video["webpage_url"])
                 # get the server voice client
-            voice_client: discord.VoiceClient | None = discord.utils.get(
-                self.bot.voice_clients, guild=server
-            )
+            voice_client = self._getVoiceClient(server)
             # check if a song is already playing
-            if not voice_client.is_playing():
+            if voice_client and not voice_client.is_playing():
                 # play the downloaded song
                 voice_client.play(FFmpegPCMAudio("song.mp3"))
                 await ctx.respond(f"Now playing **{video['title']}**")
@@ -210,11 +227,9 @@ class Player(commands.Cog):
         # only stop the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client: discord.VoiceClient | None = discord.utils.get(
-                self.bot.voice_clients, guild=server
-            )
+            voice_client = self._getVoiceClient(server)
             # check if a song is playing
-            if voice_client.is_playing():
+            if voice_client and voice_client.is_playing():
                 # stop the audio
                 voice_client.stop()
                 await ctx.respond("Stopped playing audio")
@@ -247,11 +262,9 @@ class Player(commands.Cog):
         # only pause the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client: discord.VoiceClient | None = discord.utils.get(
-                self.bot.voice_clients, guild=server
-            )
+            voice_client = self._getVoiceClient(server)
             # check if a song is playing
-            if voice_client.is_playing():
+            if voice_client and voice_client.is_playing():
                 # pause the audio
                 voice_client.pause()
                 await ctx.respond("Paused audio. Use /resume to continue playing")
@@ -282,11 +295,9 @@ class Player(commands.Cog):
         # only resume the music if the bot is in a voice channel
         if botVoiceChannel:
             # get the server voice client
-            voice_client: discord.VoiceClient | None = discord.utils.get(
-                self.bot.voice_clients, guild=server
-            )
+            voice_client = self._getVoiceClient(server)
             # check if a song is playing
-            if not voice_client.is_playing():
+            if voice_client and not voice_client.is_playing():
                 # resume the audio
                 voice_client.resume()
                 await ctx.respond("Resumed playing audio")

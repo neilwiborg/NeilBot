@@ -1,3 +1,5 @@
+from typing import cast
+
 import discord
 from discord.ext import commands
 
@@ -34,7 +36,7 @@ class Leetcode(commands.Cog):
         await ctx.defer(ephemeral=True)
 
         channel = ctx.channel
-        threads = channel.threads
+        threads = cast(list[discord.Thread], channel.threads)
         # convert to lowercase and remove periods,
         # so that we can get the problem number easily
         problem = problem.lower().translate(str.maketrans("", "", "."))
@@ -43,7 +45,8 @@ class Leetcode(commands.Cog):
 
         # store all the possible thread matches in a list, since some problems may have
         # multiple thread discussions (duplicate threads)
-        problem_threads = []
+        # problem_threads = list[discord.Thread]
+        problem_threads: list[discord.Thread] = []
 
         # the first word will either be the problem number or just a word.
         # If it's a number, then we can compare that number with thread numbers.
@@ -71,7 +74,9 @@ class Leetcode(commands.Cog):
             if problem_threads:
                 # the best matching thread should be the one with the most discussion,
                 # i.e. the thread with the most messages
-                best_match = max(problem_threads, key=lambda x: x.message_count)
+                best_match = max(
+                    problem_threads, key=lambda x: cast(int, x.message_count)
+                )
                 # if the thread has been archived, then unarchive it because discord
                 # has trouble loading messages in archived threads
                 await best_match.unarchive()

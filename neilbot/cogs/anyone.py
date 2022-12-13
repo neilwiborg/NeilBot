@@ -1,4 +1,5 @@
 import random
+from typing import cast
 
 import discord
 from discord.ext import commands
@@ -37,10 +38,10 @@ class Anyone(commands.Cog):
         try:
             # remove the 'anyone' role from everyone in the server
             for m in all_members:
-                await m.remove_roles(role)
+                await m.remove_roles(cast(discord.abc.Snowflake, role))
 
             # add the 'anyone' role to the random user
-            await member.add_roles(role)
+            await member.add_roles(cast(discord.abc.Snowflake, role))
 
             await ctx.respond(f"Set {role.mention} to {member.mention}!")
         except discord.Forbidden:
