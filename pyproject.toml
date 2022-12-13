@@ -10,7 +10,8 @@ requires-python = ">=3.10"
 name = "NeilBot"
 version = "0.0.1"
 description = "A Discord bot made by Neil."
-authors = ["Neil Wiborg"]
+license = "GPL-3.0-only"
+authors = ["Neil Wiborg <NeilWiborg@outlook.com>"]
 
 [tool.poetry.scripts]
 neilbot = "neilbot.bot:main"
@@ -35,9 +36,10 @@ flake8-typing-imports = "^1.14.0"
 mccabe = "^0.7.0"
 mypy = "^0.991"
 vulture = "^2.6"
+codespell = "^2.2.2"
 
 [tool.black]
-target-version = ['py310']
+target-version = ["py310"]
 line-length = 88
 
 [tool.flake8]
