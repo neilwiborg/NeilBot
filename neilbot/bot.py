@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 def main():
     load_dotenv()
-    token = str(os.getenv("DISCORD_TOKEN"))
+    discord_token = str(os.getenv("DISCORD_TOKEN"))
 
     activity = discord.Game(name="Leetcode")
     allowed_mentions = discord.AllowedMentions.all()
@@ -21,7 +21,7 @@ def main():
             # remove the extension from the name
             bot.load_extension(f"neilbot.cogs.{filename[:-3]}")
 
-    bot.run(token)
+    bot.run(discord_token)
 
 
 if __name__ == "__main__":
