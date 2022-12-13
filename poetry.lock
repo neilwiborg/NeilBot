@@ -529,6 +529,24 @@ pycodestyle = ">=2.10.0,<2.11.0"
 pyflakes = ">=3.0.0,<3.1.0"
 
 [[package]]
+name = "flake8-pyproject"
+version = "1.2.2"
+description = "Flake8 plug-in loading the configuration from pyproject.toml"
+category = "dev"
+optional = false
+python-versions = ">= 3.6"
+files = [
+    {file = "flake8_pyproject-1.2.2-py3-none-any.whl", hash = "sha256:52d412219e7db6227faa654675b1435947b11d49b453f3eced760f19bdd6f06a"},
+]
+
+[package.dependencies]
+Flake8 = ">=5"
+TOMLi = {version = "*", markers = "python_version < \"3.11\""}
+
+[package.extras]
+dev = ["pyTest", "pyTest-cov"]
+
+[[package]]
 name = "flake8-typing-imports"
 version = "1.14.0"
 description = "flake8 plugin which checks that typing imports are properly guarded"
@@ -1437,4 +1455,4 @@ websockets = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "e9c5dbb0196fe00c8a704ee108082c34be7ed6e217612ad303c724e7bc31cc90"
+content-hash = "fc8234fc94328cc5de51605d4ea799c26841e2af4d29af9d1ecd4b65f568da1b"
