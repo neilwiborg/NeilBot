@@ -139,6 +139,44 @@ class Player(commands.Cog):
                 ydl.download(video["webpage_url"])
         return video
 
+    async def _connect_to_voice(
+        self, ctx: discord.ApplicationContext
+    ) -> discord.VoiceChannel | None:
+        """Connects the bot to the voice channel the user is in.
+
+        If the bot successfully joins a voice channel, a reference to the joined
+        channel is returned.
+
+        If the bot is not able to join a voice channel, an error message is sent
+        using the application context and None is returned.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+
+        Returns:
+            discord.VoiceChannel | None: The joined channel, or None if the bot was
+            unable to connect.
+        """
+        # check if the member is connected to a voice channel
+        if ctx.author.voice and ctx.author.voice.channel:
+            # get the voice channel the member is connected to
+            channel = ctx.author.voice.channel
+            try:
+                # attempt to connect to the same voice channel as the member
+                await channel.connect()
+                return channel
+
+            except discord.ClientException:
+                await ctx.respond(f"Already connected to {channel.name}!")
+            except (asyncio.TimeoutError, discord.opus.OpusNotLoaded):
+                await ctx.respond(
+                    f"Unable to connect to {channel.name}, please try again later"
+                )
+        else:
+            await ctx.respond("Please join a voice channel first!")
+
+        return None
+
     @discord.slash_command(
         name="join", description="Have NeilBot join your voice channel"
     )
@@ -152,23 +190,9 @@ class Player(commands.Cog):
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
-        # check if the member is connected to a voice channel
-        if ctx.author.voice and ctx.author.voice.channel:
-            # get the voice channel the member is connected to
-            channel = ctx.author.voice.channel
-            try:
-                # attempt to connect to the same voice channel as the member
-                await channel.connect()
-
-                await ctx.respond(f"Connected to {channel.name}")
-            except discord.ClientException:
-                await ctx.respond(f"Already connected to {channel.name}!")
-            except (asyncio.TimeoutError, discord.opus.OpusNotLoaded):
-                await ctx.respond(
-                    f"Unable to connect to {channel.name}, please try again later"
-                )
-        else:
-            await ctx.respond("Please join a voice channel first!")
+        channel = await self._connect_to_voice(ctx)
+        if channel:
+            await ctx.respond(f"Connected to {channel.name}")
 
     @discord.slash_command(
         name="leave", description="Have NeilBot leave your voice channel"
@@ -231,8 +255,12 @@ class Player(commands.Cog):
 
         # the voice channel we found the bot in
         botVoiceChannel = await self._getVoiceChannel(voice_channels)
+        # if the bot is not already connected, try to join the voice channel
+        if not botVoiceChannel:
+            await self._connect_to_voice(ctx)
+            botVoiceChannel = await self._getVoiceChannel(voice_channels)
 
-        # only play music if the bot is in a voice channel
+        # only play music if the bot is in or was able to join a voice channel
         if botVoiceChannel:
             video = await self._downloadFromYouTube(url_or_search)
             if video:
@@ -247,8 +275,6 @@ class Player(commands.Cog):
                     await ctx.respond("Already playing song")
             else:
                 await ctx.respond("Error: unable to find any matching videos")
-        else:
-            await ctx.respond("Bot not in a voice channel!")
 
     @discord.slash_command(name="stop", description="Stop the currently playing audio")
     @commands.cooldown(1, 10, commands.BucketType.user)
