@@ -1,8 +1,9 @@
 import asyncio
-from typing import cast
+from typing import Any, cast
 
+import aiohttp
 import discord
-import requests
+import validators
 import yt_dlp
 from discord import FFmpegPCMAudio
 from discord.ext import commands
@@ -22,6 +23,19 @@ class Player(commands.Cog):
             bot (discord.Bot): the Discord bot this cog is being added to
         """
         self.bot = bot
+
+        # setup options for YouTube downloader
+        self.YDL_OPTIONS = {
+            "format": "bestaudio",
+            "postprocessors": [
+                {
+                    "key": "FFmpegExtractAudio",
+                    "preferredcodec": "mp3",
+                    "preferredquality": "192",
+                }
+            ],
+            "outtmpl": "song.%(ext)s",
+        }
 
     async def _getVoiceChannel(
         self, voice_channels: list[discord.VoiceChannel]
@@ -64,6 +78,66 @@ class Player(commands.Cog):
             discord.VoiceClient | None,
             discord.utils.get(self.bot.voice_clients, guild=server),
         )
+
+    async def _validYouTubeVideo(self, url: str) -> bool:
+        """Checks whether a YouTube URL loads to a valid YouTube video.
+
+        Assumes that url is a valid url to the YouTube website.
+
+        Args:
+            url (str): A valid url to YouTube.com
+
+        Returns:
+            bool: whether or not the url leads to a valid YouTube video.
+        """
+        # start an aiohttp client session
+        async with aiohttp.ClientSession() as session:
+            # send a get request to the url
+            async with session.get(url) as resp:
+                # check if response is OK
+                if resp.status == 200:
+                    # read the response stream
+                    content = await resp.text()
+                    return "Video unavailable" not in content
+        return False
+
+    async def _downloadFromYouTube(self, url_or_search: str) -> dict[str, Any] | None:
+        """Takes either a YouTube video url or a search query and downloads the video.
+
+        If a search query is given, the first result is downloaded. If no video is
+        found, then None is returned.
+
+        Args:
+            url_or_search (str): A YouTube url or search query
+
+        Returns:
+            dict[str, Any] | None: A dictionary with information about the video.
+            If no video was found, then None is returned.
+        """
+        video: dict[str, Any] | None = None
+
+        with yt_dlp.YoutubeDL(self.YDL_OPTIONS) as ydl:
+            if validators.url(url_or_search):
+                # url is valid, need to check if url is valid YouTube video still
+                if (
+                    "youtube.com" in url_or_search.lower()
+                    and await self._validYouTubeVideo(url_or_search)
+                ):
+                    # we can download the video
+                    video = ydl.extract_info(url_or_search, download=False)
+                # if it is a url but not a valid video, do not attempt to download
+            else:
+                # url_or_search is a search query
+                search_results = ydl.sanitize_info(
+                    ydl.extract_info(f"ytsearch:{url_or_search}", download=False)
+                )["entries"]
+                # if search query returned results
+                if search_results:
+                    video = search_results[0]
+            # if we found a matching video, then download it
+            if video:
+                ydl.download(video["webpage_url"])
+        return video
 
     @discord.slash_command(
         name="join", description="Have NeilBot join your voice channel"
@@ -147,19 +221,6 @@ class Player(commands.Cog):
             ctx (discord.ApplicationContext): the Discord application context
             url_or_search (str): either a YouTube url or a search query
         """
-        # setup options for YouTube downloader
-        YDL_OPTIONS = {
-            "format": "bestaudio",
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }
-            ],
-            "outtmpl": "song.%(ext)s",
-        }
-
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
 
@@ -173,35 +234,19 @@ class Player(commands.Cog):
 
         # only play music if the bot is in a voice channel
         if botVoiceChannel:
-            with yt_dlp.YoutubeDL(YDL_OPTIONS) as ydl:
-                try:
-                    # attempt to get the video if it is a url
-                    requests.get(url_or_search)
-                    video = ydl.extract_info(url_or_search, download=False)
-                # TODO: improve to handle each specific exception:
-                # https://tinyurl.com/5anp2rdr
-                except requests.exceptions.RequestException:
-                    # if it is not a url, then perform a search and choose
-                    # the first result
-                    search_results = ydl.extract_info(
-                        f"ytsearch:{url_or_search}", download=False
-                    )["entries"]
-                    if search_results:
-                        video = search_results[0]
-                    else:
-                        await ctx.respond("Error: unable to find any matching videos")
-                        return
-                # download the song from the url
-                ydl.download(video["webpage_url"])
+            video = await self._downloadFromYouTube(url_or_search)
+            if video:
                 # get the server voice client
-            voice_client = self._getVoiceClient(server)
-            # check if a song is already playing
-            if voice_client and not voice_client.is_playing():
-                # play the downloaded song
-                voice_client.play(FFmpegPCMAudio("song.mp3"))
-                await ctx.respond(f"Now playing **{video['title']}**")
+                voice_client = self._getVoiceClient(server)
+                # check if a song is already playing
+                if voice_client and not voice_client.is_playing():
+                    # play the downloaded song
+                    voice_client.play(FFmpegPCMAudio("song.mp3"))
+                    await ctx.respond(f"Now playing **{video['title']}**")
+                else:
+                    await ctx.respond("Already playing song")
             else:
-                await ctx.respond("Already playing song")
+                await ctx.respond("Error: unable to find any matching videos")
         else:
             await ctx.respond("Bot not in a voice channel!")
 
