@@ -2,6 +2,10 @@
 
 This project is a bot for Discord that includes functionality that I find entertaining.
 
+#### /photo_uws
+
+This slash command downloads a photograph of the UW Seattle campus (Red Square) at the current time.
+
 #### /photo_uwb
 
 This slash command downloads a photograph of the UW Bothell campus at the current time.

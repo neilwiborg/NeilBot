@@ -43,6 +43,35 @@ class Photo(commands.Cog):
         return None
 
     @discord.slash_command(
+        name="photo_uws", description="Take a photograph of UW Seattle"
+    )
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def take_photo_uws(self, ctx: discord.ApplicationContext) -> None:
+        """Downloads and posts a photo of the UW Seattle campus.
+
+        Downloads a photo of the UW Seattle campus from within the last 5 minutes
+        and posts the photo. If an error occurs while downloading the
+        photo, then an error message is sent instead.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+        """
+        # save the URL used for accessing the UWB webcam
+        UWS_WEBCAM_URL = "https://www.washington.edu/cambots/camera1_l.jpg"
+
+        # give us 15 minutes instead of 3 seconds to respond
+        await ctx.defer(ephemeral=False)
+
+        image = await self._download_photo(UWS_WEBCAM_URL)
+        if image:
+            await ctx.respond(
+                "UWS (Red Square) rn:",
+                file=discord.File(image, filename="camera1_l.jpg"),
+            )
+        else:
+            await ctx.respond("Error: unable to download photo")
+
+    @discord.slash_command(
         name="photo_uwb", description="Take a photograph of UW Bothell"
     )
     @commands.cooldown(1, 10, commands.BucketType.user)
