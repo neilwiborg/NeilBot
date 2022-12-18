@@ -398,7 +398,7 @@ class Player(commands.Cog):
         disconnect from a voice channel.
 
         Args:
-            member (discord.Member): The user who's voice state changed
+            member (discord.Member): The user whose voice state changed
             before (discord.VoiceState): the voice state before the user made a change
             after (discord.VoiceState): the voice state after the user made a change
         """
