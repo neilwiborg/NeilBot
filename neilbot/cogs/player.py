@@ -194,19 +194,9 @@ class Player(commands.Cog):
         if channel:
             await ctx.respond(f"Connected to {channel.name}")
 
-    @discord.slash_command(
-        name="leave", description="Have NeilBot leave your voice channel"
-    )
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def leave_voice(self, ctx: discord.ApplicationContext) -> None:
-        """Have the bot leave a voice channel.
-
-        Args:
-            ctx (discord.ApplicationContext): the Discord application context
-        """
-        # give us 15 minutes instead of 3 seconds to respond
-        await ctx.defer(ephemeral=False)
-
+    async def _disconnect_from_voice(
+        self, ctx: discord.ApplicationContext
+    ) -> discord.VoiceChannel | None:
         # get the server
         server = ctx.guild
         # get all voice channels on the server
@@ -228,9 +218,27 @@ class Player(commands.Cog):
                 await asyncio.sleep(1)
             # disconnect the bot in this server
             await server.voice_client.disconnect()
-            await ctx.respond(f"Disconnected from {botVoiceChannel.name}")
+            return botVoiceChannel
         else:
             await ctx.respond("Error: not connected to voice channel")
+        return None
+
+    @discord.slash_command(
+        name="leave", description="Have NeilBot leave your voice channel"
+    )
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def leave_voice(self, ctx: discord.ApplicationContext) -> None:
+        """Have the bot leave a voice channel.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+        """
+        # give us 15 minutes instead of 3 seconds to respond
+        await ctx.defer(ephemeral=False)
+
+        channel = await self._disconnect_from_voice(ctx)
+        if channel:
+            await ctx.respond(f"Disconnected from {channel.name}")
 
     @discord.slash_command(
         name="play", description="Play the YouTube video url or first search result"
@@ -376,6 +384,43 @@ class Player(commands.Cog):
                 await ctx.respond("Error: audio is already playing")
         else:
             await ctx.respond("Bot not in a voice channel!")
+
+    @commands.Cog.listener()
+    async def on_voice_state_update(
+        self,
+        member: discord.Member,
+        before: discord.VoiceState,
+        after: discord.VoiceState,
+    ) -> None:
+        """Checks to see if the bot is alone in a voice channel.
+
+        Runs every time a user's voice state changes, such as when they connect or
+        disconnect from a voice channel.
+
+        Args:
+            member (discord.Member): The user who's voice state changed
+            before (discord.VoiceState): the voice state before the user made a change
+            after (discord.VoiceState): the voice state after the user made a change
+        """
+        # don't need to use the 'after' voice state
+        del after
+
+        # check to see if the user was previously connected to a voice channel
+        if before.channel:
+            server = member.guild
+            channel = before.channel
+            # check to see if the bot is alone in a voice channel
+            if len(channel.members) == 1 and channel.members[0] == self.bot.user:
+                voice_client = self._getVoiceClient(server)
+                # check if a song is playing
+                if voice_client and voice_client.is_playing():
+                    # stop the audio
+                    voice_client.stop()
+                    # discord won't recognize the audio has stopped unless
+                    # we wait before disconnecting
+                    await asyncio.sleep(1)
+                # disconnect the bot in this server
+                await server.voice_client.disconnect()
 
 
 def setup(bot: discord.Bot) -> None:
