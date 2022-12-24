@@ -58,12 +58,16 @@ warn_redundant_casts = true
 warn_no_return = true
 warn_unreachable = true
 warn_unused_configs = true
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = "yt_dlp"
 ignore_missing_imports = true
 
 [tool.vulture]
-ignore_decorators = ["@discord.slash_command", "@commands.Cog.listener"]
+ignore_decorators = ["@discord.slash_command",
+                    "@discord.ui.button",
+                    "@commands.Cog.listener"
+]
 ignore_names = ["setup"]
 paths = ["neilbot"]

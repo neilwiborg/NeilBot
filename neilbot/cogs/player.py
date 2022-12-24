@@ -11,6 +11,8 @@ import yt_dlp
 from discord import FFmpegPCMAudio
 from discord.ext import commands
 
+from neilbot.cogs._playerButtons import PlayerButtons
+
 
 class Player(commands.Cog):
     """Discord Bot cog that includes slash commands for playing audio.
@@ -205,24 +207,30 @@ class Player(commands.Cog):
 
     @discord.slash_command(name="controls", description="Show music player controls")
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def show_controls(self, ctx: discord.ApplicationContext):
-        embed = discord.Embed(
-            title="Music Player Controls", description=self._currentSong
-        )
-        await ctx.respond("Controls:")
-        await ctx.channel.send(embed=embed)
-
-    @discord.slash_command(name="queue", description="Show the music queue")
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def show_queue(self, ctx: discord.ApplicationContext):
-        """Show all songs currently in the music queue.
+    async def show_controls(self, ctx: discord.ApplicationContext) -> None:
+        """Show controls for the music player.
 
         Args:
             ctx (discord.ApplicationContext): the Discord application context
         """
-        # give us 15 minutes instead of 3 seconds to respond
-        await ctx.defer(ephemeral=False)
+        controlsEmbed = discord.Embed(
+            title="Music Player Controls", description=self._currentSong
+        )
+        await ctx.respond("Controls:")
+        await ctx.channel.send(embed=controlsEmbed, view=self._buttons)
 
+    async def _show_queue_helper(
+        self, ctx: discord.ApplicationContext | discord.Interaction
+    ) -> str:
+        """Helper method for showing the queue contents.
+
+        Args:
+            ctx (discord.ApplicationContext | discord.Interaction): the Discord
+            application context or interaction
+
+        Returns:
+            str: the queue in string form or an error message
+        """
         # get the server
         server = ctx.guild
 
@@ -235,9 +243,22 @@ class Player(commands.Cog):
                 # print each song, using a 1-indexed list
                 for i, song in enumerate(self._songQueue[server.id]):
                     songList += str(i + 1) + ". " + song + "\n"
-                await ctx.respond(songList)
+                return songList
             else:
-                await ctx.respond("No songs currently in the queue")
+                return "No songs currently in the queue"
+
+    @discord.slash_command(name="queue", description="Show the music queue")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def show_queue(self, ctx: discord.ApplicationContext) -> None:
+        """Show all songs currently in the music queue.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+        """
+        # give us 15 minutes instead of 3 seconds to respond
+        await ctx.defer(ephemeral=False)
+        message = await self._show_queue_helper(ctx)
+        await ctx.respond(message)
 
     async def _connect_to_voice(
         self, ctx: discord.ApplicationContext
@@ -402,6 +423,50 @@ class Player(commands.Cog):
         else:
             await ctx.respond("Error: unable to find any matching videos")
 
+    async def _skip_audio_helper(
+        self, ctx: discord.ApplicationContext | discord.Interaction
+    ) -> str:
+        """Helper method for skipping audio.
+
+        Args:
+            ctx (discord.ApplicationContext | discord.Interaction): the Discord
+            application context or interaction
+
+        Returns:
+            str: a message describing if the operation was successful or an error
+            message
+        """
+        # get the server
+        server = ctx.guild
+        # get all voice channels on the server
+        voice_channels = server.voice_channels
+
+        # the voice channel we found the bot in
+        botVoiceChannel = await self._getVoiceChannel(voice_channels)
+
+        # only play music if the bot is in a voice channel
+        if botVoiceChannel:
+            message = ""
+            # get the server voice client
+            voice_client = self._getVoiceClient(server)
+
+            if voice_client:
+                # obtain a mutex lock so that the queue doesn't change while we are
+                # skipping to the next song
+                with self._queueLock:
+                    # check to see if the queue contains more songs
+                    if self._songQueue[server.id]:
+                        message = "Skipping to next song..."
+                    else:
+                        message = "No songs remaining in queue"
+                # stopping the currently playing song will trigger the callback and
+                # start the next song in the queue
+                voice_client.stop()
+            return message
+
+        else:
+            return "Bot not in a voice channel!"
+
     @discord.slash_command(
         name="skip", description="Skip to the next song in the queue"
     )
@@ -414,50 +479,22 @@ class Player(commands.Cog):
         """
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
+        message = await self._skip_audio_helper(ctx)
+        await ctx.respond(message)
 
-        # get the server
-        server = ctx.guild
-        # get all voice channels on the server
-        voice_channels = server.voice_channels
-
-        # the voice channel we found the bot in
-        botVoiceChannel = await self._getVoiceChannel(voice_channels)
-
-        # only play music if the bot is in a voice channel
-        if botVoiceChannel:
-            # get the server voice client
-            voice_client = self._getVoiceClient(server)
-
-            if voice_client:
-                # obtain a mutex lock so that the queue doesn't change while we are
-                # skipping to the next song
-                with self._queueLock:
-                    # check to see if the queue contains more songs
-                    if self._songQueue[server.id]:
-                        await ctx.respond("Skipping to next song...")
-                    else:
-                        await ctx.respond("No songs remaining in queue")
-                # stopping the currently playing song will trigger the callback and
-                # start the next song in the queue
-                voice_client.stop()
-
-        else:
-            await ctx.respond("Error: bot not in voice channel")
-
-    @discord.slash_command(
-        name="stop",
-        description="Stop the currently playing audio and clear the music queue",
-    )
-    @commands.cooldown(1, 10, commands.BucketType.user)
-    async def stop_audio(self, ctx: discord.ApplicationContext) -> None:
-        """Stop any audio currently playing from the bot and clear the music queue.
+    async def _stop_audio_helper(
+        self, ctx: discord.ApplicationContext | discord.Interaction
+    ) -> str:
+        """Helper method for stopping audio.
 
         Args:
-            ctx (discord.ApplicationContext): the Discord application context
-        """
-        # give us 15 minutes instead of 3 seconds to respond
-        await ctx.defer(ephemeral=False)
+            ctx (discord.ApplicationContext | discord.Interaction): the Discord
+            application context or interaction
 
+        Returns:
+            str: a message describing if the operation was successful or an error
+            message
+        """
         # get the server
         server = ctx.guild
         # get all voice channels on the server
@@ -480,11 +517,65 @@ class Player(commands.Cog):
             if voice_client and voice_client.is_playing():
                 # stop the audio
                 voice_client.stop()
-                await ctx.respond("Stopped playing audio")
+                return "Stopped playing audio"
             else:
-                await ctx.respond("Error: no audio is playing")
+                return "Error: no audio is playing"
         else:
-            await ctx.respond("Bot not in a voice channel!")
+            return "Bot not in a voice channel!"
+
+    @discord.slash_command(
+        name="stop",
+        description="Stop the currently playing audio and clear the music queue",
+    )
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def stop_audio(self, ctx: discord.ApplicationContext) -> None:
+        """Stop any audio currently playing from the bot and clear the music queue.
+
+        Args:
+            ctx (discord.ApplicationContext): the Discord application context
+        """
+        # give us 15 minutes instead of 3 seconds to respond
+        await ctx.defer(ephemeral=False)
+        message = await self._stop_audio_helper(ctx)
+        await ctx.respond(message)
+
+    async def _toggle_play_pause_audio(
+        self, ctx: discord.ApplicationContext | discord.Interaction
+    ) -> str:
+        """Toggles the audio between paused and resumed.
+
+        Args:
+            ctx (discord.ApplicationContext | discord.Interaction): the Discord
+            application context or interaction
+
+        Returns:
+            str: a message describing if the operation was successful or an error
+            message
+        """
+        # get the server
+        server = ctx.guild
+        # get all voice channels on the server
+        voice_channels = server.voice_channels
+
+        # the voice channel we found the bot in
+        botVoiceChannel = await self._getVoiceChannel(voice_channels)
+
+        # only pause the music if the bot is in a voice channel
+        if botVoiceChannel:
+            # get the server voice client
+            voice_client = self._getVoiceClient(server)
+            # check if a song is playing
+            if voice_client and voice_client.is_playing():
+                # pause the audio
+                voice_client.pause()
+                return "Paused audio. Use /resume to continue playing"
+            elif voice_client and voice_client.is_paused():
+                voice_client.resume()
+                return "Resumed playing audio"
+            else:
+                return "Error: no audio is playing"
+        else:
+            return "Bot not in a voice channel!"
 
     @discord.slash_command(
         name="pause", description="Pause the currently playing audio"
@@ -553,6 +644,18 @@ class Player(commands.Cog):
                 await ctx.respond("Error: audio is already playing")
         else:
             await ctx.respond("Bot not in a voice channel!")
+
+    @commands.Cog.listener()
+    async def on_ready(self) -> None:
+        """Adds the button view to the bot for music controls."""
+        self._buttons = PlayerButtons(
+            self._toggle_play_pause_audio,
+            self._skip_audio_helper,
+            self._show_queue_helper,
+            self._stop_audio_helper,
+        )
+
+        self.bot.add_view(self._buttons)
 
     @commands.Cog.listener()
     async def on_voice_state_update(

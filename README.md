@@ -24,7 +24,7 @@ This slash command will cause the bot to leave the voice channel it is connected
 
 #### /play `<url_or_search>`
 
-This slash command will cause the bot to play audio from the YouTube url or search passed in.
+This slash command will cause the bot to add the music from YouTube from either a URL or a search query to the queue.
 
 #### /stop
 
@@ -37,6 +37,18 @@ This slash command will cause the bot to pause the audio.
 #### /resume
 
 This slash command will cause the bot to resume the audio.
+
+#### /skip
+
+This slash command will cause the bot to skip the current track.
+
+#### /queue
+
+This slash command will cause the bot to display the current contents of the music queue.
+
+#### /controls
+
+This slash command will cause the bot to display buttons for common music controls.
 
 #### /anyone_me
 
