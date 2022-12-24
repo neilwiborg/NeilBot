@@ -22,7 +22,7 @@ This slash command will cause the bot to join the same voice channel as the user
 
 This slash command will cause the bot to leave the voice channel it is connected to.
 
-#### /play `<url_or_search>`
+#### /play_youtube `<url_or_search>`
 
 This slash command will cause the bot to add the music from YouTube from either a URL or a search query to the queue.
 
