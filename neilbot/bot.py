@@ -19,7 +19,9 @@ def main() -> None:
 
     # load all cogs into the bot
     for filename in os.listdir("./neilbot/cogs"):
-        if filename.endswith(".py"):
+        # if a filename starts with an underscore then it is a private helper
+        # and not a cog
+        if not filename.startswith("_") and filename.endswith(".py"):
             # remove the extension from the name
             bot.load_extension(f"neilbot.cogs.{filename[:-3]}")
 
