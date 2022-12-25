@@ -2,16 +2,15 @@ import asyncio
 import logging
 import threading
 from collections import defaultdict, deque
-from typing import Any, cast
+from typing import cast
 
-import aiohttp
 import discord
-import validators
-import yt_dlp
 from discord import FFmpegPCMAudio
 from discord.ext import commands
 
+from neilbot.cogs._downloader import Downloader
 from neilbot.cogs._playerButtons import PlayerButtons
+from neilbot.cogs._youtubeDownloader import YouTubeDownloader
 
 
 class Player(commands.Cog):
@@ -32,25 +31,13 @@ class Player(commands.Cog):
         # configure logging for warnings and errors
         logging.basicConfig(format="%(levelname)s:%(message)s", level=logging.WARN)
 
-        # maps a server id to a queue containing song urls
-        self._songQueue: defaultdict[int, deque[str]] = defaultdict(deque)
-        # store the current song url, or None if no song is playing
-        self._currentSong: str | None = None
-        # mutex lock for modifying the queue and currentSong
+        # maps a server id to a queue containing song downloaders
+        self._songQueue: defaultdict[int, deque[Downloader]] = defaultdict(deque)
+        # store the current song downloader for each server, or None if no song is
+        # playing
+        self._currentSongs: defaultdict[int, Downloader | None] = defaultdict(None)
+        # mutex lock for modifying the queue and currentSongs
         self._queueLock = threading.Lock()
-
-        # setup options for YouTube downloader
-        self.YDL_OPTIONS = {
-            "format": "bestaudio",
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }
-            ],
-            "outtmpl": "song.%(ext)s",
-        }
 
     async def _getVoiceChannel(
         self, voice_channels: list[discord.VoiceChannel]
@@ -94,76 +81,6 @@ class Player(commands.Cog):
             discord.utils.get(self.bot.voice_clients, guild=server),
         )
 
-    async def _getURLFromURLorSearch(self, url_or_search: str) -> str | None:
-        """Get the URL for a YouTube URL or search.
-
-        If a URL is provided, the URL is validated to confirm it leads to a YouTube
-        video.
-
-        If a search query is provided, a URL to the first search result is returned. If
-        no search results are found, then None is returned.
-
-        Args:
-            url_or_search (str): either a YouTube url or a search query
-
-        Returns:
-            str | None: A valid YouTube video URL, or None if no video is found
-        """
-        with yt_dlp.YoutubeDL(self.YDL_OPTIONS) as ydl:
-            # check if string is a valid url, that it contains the youtube.com domain,
-            # and that the URL leads to a valid YouTube video
-            if (
-                validators.url(url_or_search)
-                and "youtube.com" in url_or_search.lower()
-                and await self._validYouTubeVideo(url_or_search)
-            ):
-                return url_or_search
-            else:
-                # url_or_search is a search query
-                search_results = ydl.sanitize_info(
-                    ydl.extract_info(f"ytsearch:{url_or_search}", download=False)
-                )["entries"]
-                # if search query returned results
-                if search_results:
-                    video: dict[str, Any] | None = search_results[0]
-                    # if we found a matching video, then return the video url
-                    if video:
-                        return video["webpage_url"]
-        # if the URL was not valid or the search query did not return any results,
-        # then return None
-        return None
-
-    async def _validYouTubeVideo(self, url: str) -> bool:
-        """Checks whether a YouTube URL leads to a valid YouTube video.
-
-        Assumes that url is a valid url to the YouTube website.
-
-        Args:
-            url (str): A valid url to YouTube.com
-
-        Returns:
-            bool: whether or not the url leads to a valid YouTube video.
-        """
-        # start an aiohttp client session
-        async with aiohttp.ClientSession() as session:
-            # send a get request to the url
-            async with session.get(url) as resp:
-                # check if response is OK
-                if resp.status == 200:
-                    # read the response stream
-                    content = await resp.text()
-                    return "Video unavailable" not in content
-        return False
-
-    async def _downloadFromYouTube(self, url: str) -> None:
-        """Download a video from YouTube. Assumes url is a valid YouTube video URL.
-
-        Args:
-            url (str): A valid YouTube video URL
-        """
-        with yt_dlp.YoutubeDL(self.YDL_OPTIONS) as ydl:
-            ydl.download(url)
-
     async def _playSongQueue(
         self,
         ctx: discord.ApplicationContext,
@@ -181,14 +98,16 @@ class Player(commands.Cog):
         # obtain a mutex lock because we need to modify the queue and currentSong
         with self._queueLock:
             # reset the currentSong before we start playing a new song
-            self._currentSong = None
+            self._currentSongs[serverID] = None
             # check if there are still songs in the queue
             if self._songQueue[serverID]:
                 # set the currently playing song to the next song in the queue,
                 # and pop it from the queue
-                self._currentSong = self._songQueue[serverID].popleft()
+                song = self._songQueue[serverID].popleft()
+                # add the song to the dictionary for later use
+                self._currentSongs[serverID] = song
                 # download the song from YouTube to play it
-                await self._downloadFromYouTube(self._currentSong)
+                file = await song.downloadSong()
 
                 # get the async event loop so we can use this method as a callback
                 # to continue playing from the queue after the currentSong ends
@@ -196,14 +115,14 @@ class Player(commands.Cog):
 
                 # play the downloaded song
                 voice_client.play(
-                    FFmpegPCMAudio("song.mp3"),
+                    FFmpegPCMAudio(file),
                     after=lambda e: logging.error(e)
                     if e
                     else event_loop.create_task(
                         self._playSongQueue(ctx, serverID, voice_client)
                     ),
                 )
-                await ctx.channel.send(content=f"Now playing {self._currentSong}")
+                await ctx.channel.send(content=f"Now playing **{song.getSongName()}**")
 
     @discord.slash_command(name="controls", description="Show music player controls")
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -213,8 +132,20 @@ class Player(commands.Cog):
         Args:
             ctx (discord.ApplicationContext): the Discord application context
         """
+        # get the server
+        server = ctx.guild
+
+        # store the current song for this server
+        song = self._currentSongs[server.id]
+
+        songDescription = (
+            f"Currently playing **{song.getSongName()}**"
+            if song
+            else "No song currently playing"
+        )
         controlsEmbed = discord.Embed(
-            title="Music Player Controls", description=self._currentSong
+            title="Music Player Controls",
+            description=songDescription,
         )
         await ctx.respond("Controls:")
         await ctx.channel.send(embed=controlsEmbed, view=self._buttons)
@@ -237,12 +168,26 @@ class Player(commands.Cog):
         # obtain a mutex lock so that the queue doesn't change while we are listing
         # the songs
         with self._queueLock:
+            # store the songs queued up
+            songList = ""
+            # store the current song for this server
+            song = self._currentSongs[server.id]
+            # if a song is currently playing, then display it first
+            if song:
+                songList += "Currently playing " f"**{song.getSongName()}**\n\n"
+
             # check if the queue contains songs or is empty
             if self._songQueue[server.id]:
-                songList = "Song queue:\n"
+                songList += "Song queue:\n"
                 # print each song, using a 1-indexed list
                 for i, song in enumerate(self._songQueue[server.id]):
-                    songList += str(i + 1) + ". " + song + "\n"
+                    # if the song is stored in the list then it will always return the
+                    # song name
+                    songName = cast(str, song.getSongName())
+                    songList += (
+                        str(i + 1) + ". " + songName + " [" + song.getSource() + "]"
+                        "\n"
+                    )
                 return songList
             else:
                 return "No songs currently in the queue"
@@ -405,10 +350,11 @@ class Player(commands.Cog):
             await self._connect_to_voice(ctx)
             botVoiceChannel = await self._getVoiceChannel(voice_channels)
 
-        url = await self._getURLFromURLorSearch(url_or_search)
-        if url:
+        video: Downloader = YouTubeDownloader()
+        await video.validateAndStoreURLOrSearch(url_or_search)
+        if video:
             with self._queueLock:
-                self._songQueue[server.id].append(url)
+                self._songQueue[server.id].append(video)
 
             # only play music if the bot is in or was able to join a voice channel
             if botVoiceChannel:

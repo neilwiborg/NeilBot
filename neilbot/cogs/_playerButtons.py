@@ -62,10 +62,13 @@ class PlayerButtons(discord.ui.View):
             button (discord.Button): a message button
             interaction (discord.Interaction): the Discord message interaction
         """
+        # give us 15 minutes instead of 3 seconds to respond
+        await interaction.response.defer()
+
         # don't need to use the button
         del button
         message = await self._toggle_pause_callback(interaction)
-        await interaction.response.send_message(message)
+        await interaction.followup.send(message)
 
     @discord.ui.button(
         label="Skip",
@@ -83,10 +86,13 @@ class PlayerButtons(discord.ui.View):
             button (discord.Button): a message button
             interaction (discord.Interaction): the Discord message interaction
         """
+        # give us 15 minutes instead of 3 seconds to respond
+        await interaction.response.defer()
+
         # don't need to use the button
         del button
         message = await self._skip_callback(interaction)
-        await interaction.response.send_message(message)
+        await interaction.followup.send(message)
 
     @discord.ui.button(
         label="Stop",
@@ -104,10 +110,13 @@ class PlayerButtons(discord.ui.View):
             button (discord.Button): a message button
             interaction (discord.Interaction): the Discord message interaction
         """
+        # give us 15 minutes instead of 3 seconds to respond
+        await interaction.response.defer()
+
         # don't need to use the button
         del button
         message = await self._stop_callback(interaction)
-        await interaction.response.send_message(message)
+        await interaction.followup.send(message)
 
     @discord.ui.button(
         label="Show Queue",
@@ -125,7 +134,10 @@ class PlayerButtons(discord.ui.View):
             button (discord.Button): a message button
             interaction (discord.Interaction): the Discord message interaction
         """
+        # give us 15 minutes instead of 3 seconds to respond
+        await interaction.response.defer()
+
         # don't need to use the button
         del button
         message = await self._queue_callback(interaction)
-        await interaction.response.send_message(message)
+        await interaction.followup.send(message)
