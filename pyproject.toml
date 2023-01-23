@@ -34,7 +34,7 @@ flake8 = "^6.0.0"
 flake8-pyproject = "^1.2.2"
 mccabe = "^0.7.0"
 mypy = "^0.991"
-vulture = "^2.6"
+vulture = "^2.7"
 codespell = "^2.2.2"
 
 [tool.black]
