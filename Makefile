@@ -13,4 +13,4 @@ run:
 	poetry run neilbot
 
 clean:
-	rm -rf neilbot/__pycache__ neilbot/cogs/__pycache__
+	rm -rf **/__pycache__ .mypy_cache
