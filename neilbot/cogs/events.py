@@ -39,7 +39,7 @@ class Events(commands.Cog):
             error: the slash command exception that is not handled
         """
         if isinstance(error, commands.CommandOnCooldown):
-            await ctx.respond("This command is currently on cooldown!")
+            await ctx.respond("This command is currently on cooldown!", ephemeral=True)
         else:
             raise error
 
