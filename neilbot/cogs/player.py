@@ -95,6 +95,7 @@ class Player(commands.Cog):
             voice_client (discord.VoiceClient): the voice client for the server to play
             audio in
         """
+        song = None
         # obtain a mutex lock because we need to modify the queue and currentSong
         with self._queueLock:
             # reset the currentSong before we start playing a new song
@@ -106,23 +107,34 @@ class Player(commands.Cog):
                 song = self._songQueue[serverID].popleft()
                 # add the song to the dictionary for later use
                 self._currentSongs[serverID] = song
-                # download the song from YouTube to play it
-                file = await song.downloadSong()
+        # check if song is still None
+        if song:
+            # download the song from YouTube to play it
+            file = await song.downloadSong()
 
-                # get the async event loop so we can use this method as a callback
-                # to continue playing from the queue after the currentSong ends
-                event_loop = asyncio.get_event_loop()
+            with self._queueLock:
+                # if the current song has not been skipped while downloading
+                if self._currentSongs[serverID] == song:
+                    # get the async event loop so we can use this method as a callback
+                    # to continue playing from the queue after the currentSong ends
+                    event_loop = asyncio.get_event_loop()
 
-                # play the downloaded song
-                voice_client.play(
-                    FFmpegPCMAudio(file),
-                    after=lambda e: logging.error(e)
-                    if e
-                    else event_loop.create_task(
-                        self._playSongQueue(ctx, serverID, voice_client)
-                    ),
-                )
-                await ctx.channel.send(content=f"Now playing **{song.getSongName()}**")
+                    try:
+                        # play the downloaded song
+                        voice_client.play(
+                            FFmpegPCMAudio(file),
+                            after=lambda e: logging.error(e)
+                            if e
+                            else event_loop.create_task(
+                                self._playSongQueue(ctx, serverID, voice_client)
+                            ),
+                        )
+                        await ctx.channel.send(
+                            content=f"Now playing **{song.getSongName()}**"
+                        )
+                    except discord.ClientException:
+                        # if bot is no longer connected to voice, then don't do anything
+                        pass
 
     @discord.slash_command(name="controls", description="Show music player controls")
     @commands.cooldown(1, 10, commands.BucketType.user)
