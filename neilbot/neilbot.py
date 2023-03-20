@@ -1,10 +1,20 @@
 import os
 
+import aiohttp
 import discord
 
 
 class NeilBot(discord.Bot):
+    """Custom Discord bot with useful features.
+
+    Contains clients for easily interacting with other services.
+    """
+
     def __init__(self) -> None:
+        """Inits a new new instance of the NeilBot Discord bot.
+
+        Loads additional cog components from the cogs/ directory.
+        """
         activity = discord.Game(name="Leetcode")
         allowed_mentions = discord.AllowedMentions.all()
         intents = discord.Intents(guilds=True, members=True, voice_states=True)
@@ -21,4 +31,6 @@ class NeilBot(discord.Bot):
                 self.load_extension(f"neilbot.cogs.{filename[:-3]}")
 
     async def on_ready(self) -> None:
-        ...
+        """Setup class members potentially needed for more than one component."""
+        # create client for making HTTP requests
+        self.httpClient = aiohttp.ClientSession()

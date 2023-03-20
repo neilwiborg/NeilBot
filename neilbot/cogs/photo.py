@@ -1,6 +1,5 @@
 from io import BytesIO
 
-import aiohttp
 import discord
 from discord.ext import commands
 
@@ -11,14 +10,14 @@ class Photo(commands.Cog):
     """Discord Bot cog that includes slash commands for taking photographs.
 
     Attributes:
-        bot (discord.Bot): the instance of the Discord bot this cog is added to
+        bot (NeilBot): the instance of the Discord bot this cog is added to
     """
 
     def __init__(self, bot: NeilBot):
         """Inits the Photo cog.
 
         Args:
-            bot (discord.Bot): the Discord bot this cog is being added to
+            bot (NeilBot): the Discord bot this cog is being added to
         """
         self.bot = bot
 
@@ -33,15 +32,13 @@ class Photo(commands.Cog):
             BytesIO | None: the image in bytes. If an error occurred while
             downloading, then None is returned.
         """
-        # start an aiohttp client session
-        async with aiohttp.ClientSession() as session:
-            # send a get request to the url
-            async with session.get(url) as resp:
-                # check if response is OK
-                if resp.status == 200:
-                    # read the response stream
-                    image = BytesIO(await resp.read())
-                    return image
+        # send a get request to the url
+        async with self.bot.httpClient.get(url) as resp:
+            # check if response is OK
+            if resp.status == 200:
+                # read the response stream
+                image = BytesIO(await resp.read())
+                return image
         return None
 
     @discord.slash_command(
@@ -106,6 +103,6 @@ def setup(bot: NeilBot) -> None:
     """Attach the Photo cog to a Discord bot.
 
     Args:
-        bot (discord.Bot): the Discord bot to add the Photo cog to
+        bot (NeilBot): the Discord bot to add the Photo cog to
     """
     bot.add_cog(Photo(bot))

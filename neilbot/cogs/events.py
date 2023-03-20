@@ -8,14 +8,14 @@ class Events(commands.Cog):
     """Discord Bot cog that includes listeners for Discord events.
 
     Attributes:
-        bot (discord.Bot): the instance of the Discord bot this cog is added to
+        bot (NeilBot): the instance of the Discord bot this cog is added to
     """
 
     def __init__(self, bot: NeilBot):
         """Inits the Events cog.
 
         Args:
-            bot (discord.Bot): the Discord bot this cog is being added to
+            bot (NeilBot): the Discord bot this cog is being added to
         """
         self.bot = bot
 
@@ -50,6 +50,6 @@ def setup(bot: NeilBot) -> None:
     """Attach the Events cog to a Discord bot.
 
     Args:
-        bot (discord.Bot): the Discord bot to add the Events cog to
+        bot (NeilBot): the Discord bot to add the Events cog to
     """
     bot.add_cog(Events(bot))

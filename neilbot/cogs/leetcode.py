@@ -11,14 +11,14 @@ class Leetcode(commands.Cog):
     """Discord Bot cog that includes slash commands for Leetcode problems.
 
     Attributes:
-        bot (discord.Bot): the instance of the Discord bot this cog is added to
+        bot (NeilBot): the instance of the Discord bot this cog is added to
     """
 
     def __init__(self, bot: NeilBot):
         """Inits the Leetcode cog.
 
         Args:
-            bot (discord.Bot): the Discord bot this cog is being added to
+            bot (NeilBot): the Discord bot this cog is being added to
         """
         self.bot = bot
 
@@ -197,6 +197,6 @@ def setup(bot: NeilBot) -> None:
     """Attach the Leetcode cog to a Discord bot.
 
     Args:
-        bot (discord.Bot): the Discord bot to add the Leetcode cog to
+        bot (NeilBot): the Discord bot to add the Leetcode cog to
     """
     bot.add_cog(Leetcode(bot))

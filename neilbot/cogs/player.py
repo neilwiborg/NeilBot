@@ -18,14 +18,14 @@ class Player(commands.Cog):
     """Discord Bot cog that includes slash commands for playing audio.
 
     Attributes:
-        bot (discord.Bot): the instance of the Discord bot this cog is added to
+        bot (NeilBot): the instance of the Discord bot this cog is added to
     """
 
     def __init__(self, bot: NeilBot):
         """Inits the Player cog.
 
         Args:
-            bot (discord.Bot): the Discord bot this cog is being added to
+            bot (NeilBot): the Discord bot this cog is being added to
         """
         self.bot = bot
 
@@ -658,6 +658,6 @@ def setup(bot: NeilBot) -> None:
     """Attach the Player cog to a Discord bot.
 
     Args:
-        bot (discord.Bot): the Discord bot to add the Player cog to
+        bot (NeilBot): the Discord bot to add the Player cog to
     """
     bot.add_cog(Player(bot))
