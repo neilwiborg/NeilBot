@@ -11,6 +11,7 @@ from discord.ext import commands
 from neilbot.cogs._downloader import Downloader
 from neilbot.cogs._playerButtons import PlayerButtons
 from neilbot.cogs._youtubeDownloader import YouTubeDownloader
+from neilbot.neilbot import NeilBot
 
 
 class Player(commands.Cog):
@@ -20,7 +21,7 @@ class Player(commands.Cog):
         bot (discord.Bot): the instance of the Discord bot this cog is added to
     """
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: NeilBot):
         """Inits the Player cog.
 
         Args:
@@ -653,7 +654,7 @@ class Player(commands.Cog):
                 await server.voice_client.disconnect()
 
 
-def setup(bot: discord.Bot) -> None:
+def setup(bot: NeilBot) -> None:
     """Attach the Player cog to a Discord bot.
 
     Args:

@@ -4,6 +4,8 @@ import aiohttp
 import discord
 from discord.ext import commands
 
+from neilbot.neilbot import NeilBot
+
 
 class Photo(commands.Cog):
     """Discord Bot cog that includes slash commands for taking photographs.
@@ -12,7 +14,7 @@ class Photo(commands.Cog):
         bot (discord.Bot): the instance of the Discord bot this cog is added to
     """
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: NeilBot):
         """Inits the Photo cog.
 
         Args:
@@ -100,7 +102,7 @@ class Photo(commands.Cog):
             await ctx.respond("Error: unable to download photo")
 
 
-def setup(bot: discord.Bot) -> None:
+def setup(bot: NeilBot) -> None:
     """Attach the Photo cog to a Discord bot.
 
     Args:

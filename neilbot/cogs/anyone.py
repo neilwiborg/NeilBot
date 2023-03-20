@@ -4,6 +4,8 @@ from typing import cast
 import discord
 from discord.ext import commands
 
+from neilbot.neilbot import NeilBot
+
 
 class Anyone(commands.Cog):
     """Discord Bot cog that includes slash commands for setting the Anyone role.
@@ -12,7 +14,7 @@ class Anyone(commands.Cog):
         bot (discord.Bot): the instance of the Discord bot this cog is added to
     """
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: NeilBot):
         """Inits the Anyone cog.
 
         Args:
@@ -116,7 +118,7 @@ class Anyone(commands.Cog):
             await ctx.respond("Error: please add me to the server first!")
 
 
-def setup(bot: discord.Bot) -> None:
+def setup(bot: NeilBot) -> None:
     """Attach the Anyone cog to a Discord bot.
 
     Args:

@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from neilbot.neilbot import NeilBot
+
 
 class Events(commands.Cog):
     """Discord Bot cog that includes listeners for Discord events.
@@ -9,7 +11,7 @@ class Events(commands.Cog):
         bot (discord.Bot): the instance of the Discord bot this cog is added to
     """
 
-    def __init__(self, bot: discord.Bot):
+    def __init__(self, bot: NeilBot):
         """Inits the Events cog.
 
         Args:
@@ -44,7 +46,7 @@ class Events(commands.Cog):
             raise error
 
 
-def setup(bot: discord.Bot) -> None:
+def setup(bot: NeilBot) -> None:
     """Attach the Events cog to a Discord bot.
 
     Args:

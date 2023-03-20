@@ -14,7 +14,7 @@ license = "GPL-3.0-only"
 authors = ["Neil Wiborg <NeilWiborg@outlook.com>"]
 
 [tool.poetry.scripts]
-neilbot = "neilbot.bot:main"
+neilbot = "main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -68,5 +68,5 @@ ignore_decorators = ["@discord.slash_command",
                     "@discord.ui.button",
                     "@commands.Cog.listener"
 ]
-ignore_names = ["setup"]
+ignore_names = ["setup", "on_ready"]
 paths = ["neilbot"]
