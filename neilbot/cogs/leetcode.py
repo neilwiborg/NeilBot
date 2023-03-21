@@ -120,8 +120,8 @@ class Leetcode(commands.Cog):
                 best_match = max(matches, key=lambda x: cast(int, x.message_count))
                 return best_match
 
-        # if we don't know the number of the problem we are searching for if we didn't
-        # find any threads using the problem number, then search by problem name.
+        # if we don't know the number of the problem we are searching for or if we
+        # didn't find any threads using the problem number, then search by problem name.
         for th in threads:
             # convert the thread name to lowercase for better comparison.
             th_name = self._convertThreadName(th.name)
@@ -140,6 +140,27 @@ class Leetcode(commands.Cog):
             return best_match
         # if no threads matched the one we were looking for
         return None
+
+    async def getArchivedThreads(
+        self, channel: discord.TextChannel
+    ) -> list[discord.Thread]:
+        """Gets all archived threads from a specified channel.
+
+        Args:
+            channel (discord.TextChannel): a Discord channel to get threads from
+
+        Returns:
+            list[discord.Thread]: a list of all archived threads, or an empty list
+            if no archived threads were found
+        """
+        # store all found threads
+        threads: list[discord.Thread] = []
+        # iterate over all archived threads
+        async for th in channel.archived_threads():
+            # add each thread to the list
+            threads.append(th)
+        # return all archived threads
+        return threads
 
     @discord.slash_command(
         name="lc_thread", description="Find the Leetcode thread for a problem"
@@ -160,16 +181,8 @@ class Leetcode(commands.Cog):
         channel = ctx.channel
         logging.warn(channel.threads)
         threads = cast(list[discord.Thread], channel.threads)
-        try:
-            threads.extend(channel.archived_threads())
-        except discord.Forbidden:
-            await ctx.respond(
-                "Error: bot does not have permission to get archived threads"
-            )
-            return
-        except discord.HTTPException:
-            await ctx.respond("Error: unable to get threads. Please try again later.")
-            return
+        archivedThreads = await self.getArchivedThreads(channel)
+        threads.extend(archivedThreads)
 
         # convert to lowercase and remove periods,
         # so that we can get the problem number easily
