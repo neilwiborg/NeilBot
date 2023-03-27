@@ -1011,14 +1011,14 @@ virtualenv = ">=20.10.0"
 
 [[package]]
 name = "py-cord"
-version = "2.4.0"
+version = "2.4.1"
 description = "A Python wrapper for the Discord API"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "py-cord-2.4.0.tar.gz", hash = "sha256:2f35d92555ace5573b6349e010b4ad202603be0ab9f8afbc1d91b9cd1f203694"},
-    {file = "py_cord-2.4.0-py3-none-any.whl", hash = "sha256:2f81dcc3c8b06d7470a90a39b0245d85285ff4170c53720f28d494848d5d8dd5"},
+    {file = "py-cord-2.4.1.tar.gz", hash = "sha256:0266c9d9a9d2397622a0e5ead09826690e688ba3cf14c470167b81e6cd2d8a56"},
+    {file = "py_cord-2.4.1-py3-none-any.whl", hash = "sha256:862a372c364cd263e2c8e696c64887f969c02cbdf0fdd6b09f0283e9dd67a290"},
 ]
 
 [package.dependencies]
@@ -1525,4 +1525,4 @@ websockets = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "cce374e2dd5abb0a2e02e0ac78e5c96bb78a4104873b42e3dd26cf5ed89b0e12"
+content-hash = "80ceee7f1709ca052d9dcd5676ef5a199c84a1b95e319adba9a3a6ed37a2c082"
