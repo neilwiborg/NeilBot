@@ -18,22 +18,24 @@ neilbot = "main:main"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-py-cord = {extras = ["voice"], version = "^2.4.0"}
+py-cord = {extras = ["voice"], version = "^2.4.1"}
 yt-dlp = "^2023.03.04"
 python-dotenv = "^1.0.0"
 aiohttp = "^3.8.4"
 validators = "^0.20.0"
+apscheduler = "^3.10.1"
+pymongo =  {extras = ["srv"], version = "^4.3.3"}
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^2.21.0"
+pre-commit = "^3.2.1"
 pyupgrade = "^3.3.1"
-autoflake = "^2.0.2"
+autoflake = "^2.1.1"
 isort = "^5.12.0"
-black = "^22.12.0"
+black = "^23.3.0"
 flake8 = "^6.0.0"
-flake8-pyproject = "^1.2.2"
+flake8-pyproject = "^1.2.3"
 mccabe = "^0.7.0"
-mypy = "^0.991"
+mypy = "^1.3.0"
 vulture = "^2.7"
 codespell = "^2.2.4"
 
