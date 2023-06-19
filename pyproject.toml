@@ -27,8 +27,8 @@ apscheduler = "^3.10.1"
 pymongo =  {extras = ["srv"], version = "^4.3.3"}
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.2.1"
-pyupgrade = "^3.3.1"
+pre-commit = "^3.3.3"
+pyupgrade = "^3.7.0"
 autoflake = "^2.1.1"
 isort = "^5.12.0"
 black = "^23.3.0"
@@ -37,7 +37,7 @@ flake8-pyproject = "^1.2.3"
 mccabe = "^0.7.0"
 mypy = "^1.3.0"
 vulture = "^2.7"
-codespell = "^2.2.4"
+codespell = "^2.2.5"
 
 [tool.black]
 target-version = ["py310"]
