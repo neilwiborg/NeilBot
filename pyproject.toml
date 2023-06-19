@@ -27,7 +27,7 @@ apscheduler = "^3.10.1"
 pymongo =  {extras = ["srv"], version = "^4.3.3"}
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.2.1"
+pre-commit = "^3.3.3"
 pyupgrade = "^3.3.1"
 autoflake = "^2.1.1"
 isort = "^5.12.0"
