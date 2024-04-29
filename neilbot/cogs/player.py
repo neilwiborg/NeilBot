@@ -124,10 +124,12 @@ class Player(commands.Cog):
                         # play the downloaded song
                         voice_client.play(
                             FFmpegPCMAudio(file),
-                            after=lambda e: logging.error(e)
-                            if e
-                            else event_loop.create_task(
-                                self._playSongQueue(ctx, serverID, voice_client)
+                            after=lambda e: (
+                                logging.error(e)
+                                if e
+                                else event_loop.create_task(
+                                    self._playSongQueue(ctx, serverID, voice_client)
+                                )
                             ),
                         )
                         await ctx.channel.send(
