@@ -1,4 +1,3 @@
-import logging
 from typing import cast
 
 import discord
@@ -98,8 +97,6 @@ class Leetcode(commands.Cog):
         # multiple thread discussions (duplicate threads)
         matches: list[discord.Thread] = []
 
-        logging.warn(threads)
-
         # if we know the number of the problem we are searching for then use that first.
         if number:
             # check every thread in the channel
@@ -179,7 +176,6 @@ class Leetcode(commands.Cog):
         await ctx.defer(ephemeral=True)
 
         channel = ctx.channel
-        logging.warn(channel.threads)
         threads = cast(list[discord.Thread], channel.threads)
         archivedThreads = await self.getArchivedThreads(channel)
         threads.extend(archivedThreads)

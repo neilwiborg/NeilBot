@@ -124,10 +124,12 @@ class Player(commands.Cog):
                         # play the downloaded song
                         voice_client.play(
                             FFmpegPCMAudio(file),
-                            after=lambda e: logging.error(e)
-                            if e
-                            else event_loop.create_task(
-                                self._playSongQueue(ctx, serverID, voice_client)
+                            after=lambda e: (
+                                logging.error(e)
+                                if e
+                                else event_loop.create_task(
+                                    self._playSongQueue(ctx, serverID, voice_client)
+                                )
                             ),
                         )
                         await ctx.channel.send(
@@ -187,7 +189,7 @@ class Player(commands.Cog):
             song = self._currentSongs[server.id]
             # if a song is currently playing, then display it first
             if song:
-                songList += "Currently playing " f"**{song.getSongName()}**\n\n"
+                songList += f"Currently playing **{song.getSongName()}**\n\n"
 
             # check if the queue contains songs or is empty
             if self._songQueue[server.id]:
@@ -198,8 +200,7 @@ class Player(commands.Cog):
                     # song name
                     songName = cast(str, song.getSongName())
                     songList += (
-                        str(i + 1) + ". " + songName + " [" + song.getSource() + "]"
-                        "\n"
+                        str(i + 1) + ". " + songName + " [" + song.getSource() + "]\n"
                     )
                 return songList
             else:
