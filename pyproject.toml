@@ -36,7 +36,7 @@ mccabe = "^0.7.0"
 mypy = "^1.10.0"
 vulture = "^2.11"
 codespell = "^2.2.6"
-pre-commit = "^3.7.0"
+pre-commit = "^3.7.1"
 black = "^24.4.2"
 
 [tool.black]
