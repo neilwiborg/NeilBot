@@ -22,7 +22,7 @@ py-cord = {extras = ["voice"], version = "^2.5.0"}
 python-dotenv = "^1.0.1"
 validators = "^0.22.0"
 apscheduler = "^3.10.4"
-pymongo =  {extras = ["srv"], version = "^4.7.1"}
+pymongo =  {extras = ["srv"], version = "^4.7.2"}
 yt-dlp = "^2024.4.9"
 aiohttp = "^3.9.5"
 
