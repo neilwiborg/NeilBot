@@ -3,6 +3,9 @@
 update-deps:
 	poetry update
 
+update-pre-commit:
+	pip install --upgrade pre-commit
+
 setup: poetry.lock
 	poetry install
 
