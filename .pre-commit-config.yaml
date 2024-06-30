@@ -8,7 +8,7 @@ repos:
     -   id: check-yaml
     -   id: check-added-large-files
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.2
+    rev: v3.16.0
     hooks:
     -   id: pyupgrade
         args: [--py310-plus]
@@ -31,7 +31,7 @@ repos:
     hooks:
     -   id: black-disable-checker
 -   repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+    rev: 7.1.0
     hooks:
     -   id: flake8
         additional_dependencies: [
@@ -39,7 +39,7 @@ repos:
             mccabe==0.7.0
         ]
 -   repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
+    rev: v1.10.1
     hooks:
     -   id: mypy
         additional_dependencies: [types-requests]
