@@ -20,7 +20,7 @@ neilbot = "main:main"
 python = "^3.10"
 py-cord = {extras = ["voice"], version = "^2.5.0"}
 python-dotenv = "^1.0.1"
-validators = "^0.28.3"
+validators = "^0.30.0"
 apscheduler = "^3.10.4"
 pymongo =  {extras = ["srv"], version = "^4.8.0"}
 yt-dlp = "^2024.5.27"
