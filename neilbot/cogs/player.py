@@ -5,6 +5,7 @@ from collections import defaultdict, deque
 from typing import cast
 
 import discord
+import yt_dlp
 from discord import FFmpegPCMAudio
 from discord.ext import commands
 
@@ -110,34 +111,41 @@ class Player(commands.Cog):
                 self._currentSongs[serverID] = song
         # check if song is still None
         if song:
-            # download the song from YouTube to play it
-            file = await song.downloadSong()
+            try:
+                # download the song from YouTube to play it
+                file = await song.downloadSong()
 
-            with self._queueLock:
-                # if the current song has not been skipped while downloading
-                if self._currentSongs[serverID] == song:
-                    # get the async event loop so we can use this method as a callback
-                    # to continue playing from the queue after the currentSong ends
-                    event_loop = asyncio.get_event_loop()
+                with self._queueLock:
+                    # if the current song has not been skipped while downloading
+                    if self._currentSongs[serverID] == song:
+                        # get the async event loop so we can use this method as a
+                        # callback to continue playing from the queue after the
+                        # currentSong ends
+                        event_loop = asyncio.get_event_loop()
 
-                    try:
-                        # play the downloaded song
-                        voice_client.play(
-                            FFmpegPCMAudio(file),
-                            after=lambda e: (
-                                logging.error(e)
-                                if e
-                                else event_loop.create_task(
-                                    self._playSongQueue(ctx, serverID, voice_client)
-                                )
-                            ),
-                        )
-                        await ctx.channel.send(
-                            content=f"Now playing **{song.getSongName()}**"
-                        )
-                    except discord.ClientException:
-                        # if bot is no longer connected to voice, then don't do anything
-                        pass
+                        try:
+                            # play the downloaded song
+                            voice_client.play(
+                                FFmpegPCMAudio(file),
+                                after=lambda e: (
+                                    logging.error(e)
+                                    if e
+                                    else event_loop.create_task(
+                                        self._playSongQueue(ctx, serverID, voice_client)
+                                    )
+                                ),
+                            )
+                            await ctx.channel.send(
+                                content=f"Now playing **{song.getSongName()}**"
+                            )
+                        except discord.ClientException:
+                            # if bot is no longer connected to voice,
+                            # then don't do anything
+                            pass
+            except yt_dlp.utils.DownloadError:
+                await ctx.channel.send(
+                    "Unable to download song, please try again later"
+                )
 
     @discord.slash_command(name="controls", description="Show music player controls")
     @commands.cooldown(1, 10, commands.BucketType.user)
