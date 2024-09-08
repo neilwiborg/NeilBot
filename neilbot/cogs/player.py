@@ -392,7 +392,7 @@ class Player(commands.Cog):
             else:
                 await ctx.respond("Error: unable to find any matching videos")
         except yt_dlp.utils.DownloadError:
-            await ctx.channel.send(
+            await ctx.channel.respond(
                 "Error: unable to download song, please try again later"
             )
 
