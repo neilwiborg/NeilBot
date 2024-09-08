@@ -144,7 +144,7 @@ class Player(commands.Cog):
                             pass
             except yt_dlp.utils.DownloadError:
                 await ctx.channel.send(
-                    "Unable to download song, please try again later"
+                    "Error: unable to download song, please try again later"
                 )
 
     @discord.slash_command(name="controls", description="Show music player controls")
@@ -372,24 +372,29 @@ class Player(commands.Cog):
             await self._connect_to_voice(ctx)
             botVoiceChannel = await self._getVoiceChannel(voice_channels)
 
-        video: Downloader = YouTubeDownloader()
-        await video.validateAndStoreURLOrSearch(url_or_search)
-        if video:
-            with self._queueLock:
-                self._songQueue[server.id].append(video)
+        try:
+            video: Downloader = YouTubeDownloader()
+            await video.validateAndStoreURLOrSearch(url_or_search)
+            if video:
+                with self._queueLock:
+                    self._songQueue[server.id].append(video)
 
-            # only play music if the bot is in or was able to join a voice channel
-            if botVoiceChannel:
-                # get the server voice client
-                voice_client = self._getVoiceClient(server)
-                # check if a song is already playing
-                if voice_client and not voice_client.is_playing():
-                    await ctx.respond("Starting to play queue...")
-                    await self._playSongQueue(ctx, server.id, voice_client)
-                else:
-                    await ctx.respond("Song added to queue!")
-        else:
-            await ctx.respond("Error: unable to find any matching videos")
+                # only play music if the bot is in or was able to join a voice channel
+                if botVoiceChannel:
+                    # get the server voice client
+                    voice_client = self._getVoiceClient(server)
+                    # check if a song is already playing
+                    if voice_client and not voice_client.is_playing():
+                        await ctx.respond("Starting to play queue...")
+                        await self._playSongQueue(ctx, server.id, voice_client)
+                    else:
+                        await ctx.respond("Song added to queue!")
+            else:
+                await ctx.respond("Error: unable to find any matching videos")
+        except yt_dlp.utils.DownloadError:
+            await ctx.channel.send(
+                "Error: unable to download song, please try again later"
+            )
 
     async def _skip_audio_helper(
         self, ctx: discord.ApplicationContext | discord.Interaction
