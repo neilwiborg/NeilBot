@@ -392,9 +392,7 @@ class Player(commands.Cog):
             else:
                 await ctx.respond("Error: unable to find any matching videos")
         except yt_dlp.utils.DownloadError:
-            await ctx.channel.respond(
-                "Error: unable to download song, please try again later"
-            )
+            await ctx.respond("Error: unable to download song, please try again later")
 
     async def _skip_audio_helper(
         self, ctx: discord.ApplicationContext | discord.Interaction
