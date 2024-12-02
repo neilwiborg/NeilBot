@@ -24,7 +24,7 @@ validators = "^0.33.0"
 apscheduler = "^3.10.4"
 pymongo =  {extras = ["srv"], version = "^4.10.1"}
 yt-dlp = "^2024.11.04"
-aiohttp = "^3.11.2"
+aiohttp = "^3.11.9"
 
 [tool.poetry.group.dev.dependencies]
 pyupgrade = "^3.19.0"
