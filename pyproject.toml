@@ -23,7 +23,7 @@ python-dotenv = "^1.0.1"
 validators = "^0.33.0"
 apscheduler = "^3.10.4"
 pymongo =  {extras = ["srv"], version = "^4.10.1"}
-yt-dlp = "^2024.11.04"
+yt-dlp = "^2024.12.23"
 aiohttp = "^3.11.2"
 
 [tool.poetry.group.dev.dependencies]
