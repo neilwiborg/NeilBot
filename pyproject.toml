@@ -35,7 +35,7 @@ flake8-pyproject = "^1.2.3"
 mccabe = "^0.7.0"
 mypy = "^1.14.1"
 vulture = "^2.14"
-codespell = "^2.3.0"
+codespell = "^2.4.0"
 pre-commit = "^4.1.0"
 black = "^24.10.0"
 
