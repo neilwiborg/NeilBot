@@ -85,7 +85,7 @@ class Photo(commands.Cog):
             ctx (discord.ApplicationContext): the Discord application context
         """
         # save the URL used for accessing the UWB webcam
-        UWB_WEBCAM_URL = "http://69.91.192.220/netcam.jpg"
+        UWB_WEBCAM_URL = "https://camera.uwb.edu/netcam.jpg"
 
         # give us 15 minutes instead of 3 seconds to respond
         await ctx.defer(ephemeral=False)
