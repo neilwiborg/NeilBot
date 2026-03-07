@@ -34,6 +34,7 @@
         "- [ ] Update `project.requires-python` in `pyproject.toml`",
         "- [ ] Update `tool.black.target-version` in `pyproject.toml`",
         "- [ ] Update `tool.mypy.python_version` in `pyproject.toml`",
+        "- [ ] Update `default_language_version.python` in `.pre-commit-config.yaml`",
         "- [ ] Update `--py310-plus` (or equivalent) in `.pre-commit-config.yaml`",
         "- [ ] Update `FROM python:...` in `Dockerfile`"
       ]
