@@ -1,19 +1,33 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "enabledManagers": ["poetry", "pre-commit", "github-actions"],
+  "extends": [
+    "config:recommended"
+  ],
+  "enabledManagers": [
+    "poetry",
+    "pre-commit",
+    "github-actions"
+  ],
   "pre-commit": {
     "enabled": true
   },
-  "labels": ["dependencies"],
+  "labels": [
+    "dependencies"
+  ],
   "dependencyDashboard": true,
   "timezone": "America/Los_Angeles",
   "rangeStrategy": "bump",
-  "schedule": ["before 5am on saturday"],
+  "schedule": [
+    "before 5am on saturday"
+  ],
   "packageRules": [
     {
-      "matchManagers": ["poetry"],
-      "matchDepNames": ["python"],
+      "matchManagers": [
+        "poetry"
+      ],
+      "matchDepNames": [
+        "python"
+      ],
       "groupName": "python runtime version",
       "prBodyNotes": [
         "Manual follow-ups for Python runtime bumps:",
@@ -25,9 +39,14 @@
       ]
     },
     {
-      "matchManagers": ["poetry", "pre-commit"],
-      "excludeDepNames": ["python"],
-      "groupName": "pre-commit hooks"
+      "matchManagers": [
+        "poetry",
+        "pre-commit"
+      ],
+      "groupName": "pre-commit hooks",
+      "matchDepNames": [
+        "!python"
+      ]
     }
   ]
 }
