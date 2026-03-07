@@ -12,7 +12,21 @@
   "schedule": ["before 5am on saturday"],
   "packageRules": [
     {
+      "matchManagers": ["poetry"],
+      "matchPackageNames": ["python"],
+      "groupName": "python runtime version",
+      "prBodyNotes": [
+        "Manual follow-ups for Python runtime bumps:",
+        "- [ ] Update `project.requires-python` in `pyproject.toml`",
+        "- [ ] Update `tool.black.target-version` in `pyproject.toml`",
+        "- [ ] Update `tool.mypy.python_version` in `pyproject.toml`",
+        "- [ ] Update `--py310-plus` (or equivalent) in `.pre-commit-config.yaml`",
+        "- [ ] Update `FROM python:...` in `Dockerfile`"
+      ]
+    },
+    {
       "matchManagers": ["poetry", "pre-commit"],
+      "excludePackageNames": ["python"],
       "groupName": "pre-commit hooks"
     }
   ]
