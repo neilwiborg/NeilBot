@@ -13,7 +13,7 @@
   "packageRules": [
     {
       "matchManagers": ["poetry"],
-      "matchPackageNames": ["python"],
+      "matchDepNames": ["python"],
       "groupName": "python runtime version",
       "prBodyNotes": [
         "Manual follow-ups for Python runtime bumps:",
@@ -26,7 +26,7 @@
     },
     {
       "matchManagers": ["poetry", "pre-commit"],
-      "excludePackageNames": ["python"],
+      "excludeDepNames": ["python"],
       "groupName": "pre-commit hooks"
     }
   ]
