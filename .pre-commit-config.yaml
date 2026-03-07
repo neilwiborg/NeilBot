@@ -34,15 +34,17 @@ repos:
     rev: 7.3.0
     hooks:
     -   id: flake8
-        additional_dependencies: [
-            flake8-pyproject==1.2.3,
-            mccabe==0.7.0
-        ]
+        language: python
+        additional_dependencies:
+        -   flake8-pyproject==1.2.3,
+        -   mccabe==0.7.0
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.19.1
     hooks:
     -   id: mypy
-        additional_dependencies: [types-requests]
+        language: python
+        additional_dependencies:
+        -   types-requests
 -   repo: https://github.com/jendrikseipp/vulture
     rev: v2.15
     hooks:
@@ -51,5 +53,6 @@ repos:
     rev: v2.4.2
     hooks:
     -   id: codespell
+        language: python
         additional_dependencies:
         -   tomli
