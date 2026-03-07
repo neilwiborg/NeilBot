@@ -2,6 +2,9 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
   "enabledManagers": ["poetry", "pre-commit", "github-actions"],
+  "pre-commit": {
+    "enabled": true
+  },
   "labels": ["dependencies"],
   "dependencyDashboard": true,
   "timezone": "America/Los_Angeles",
