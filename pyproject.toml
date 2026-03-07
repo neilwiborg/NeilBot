@@ -2,42 +2,42 @@
 name = "NeilBot"
 version = "0.0.1"
 description = "A Discord bot made by Neil."
-license = { file = "LICENSE" }
-readme = "README.md"
-requires-python = ">=3.10"
-
-[tool.poetry]
-name = "NeilBot"
-version = "0.0.1"
-description = "A Discord bot made by Neil."
+authors = [{ name = "Neil Wiborg", email = "NeilWiborg@outlook.com" }]
 license = "GPL-3.0-only"
-authors = ["Neil Wiborg <NeilWiborg@outlook.com>"]
+license-files = ["LICENSE"]
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "py-cord[voice]==2.7.1",
+    "python-dotenv==1.2.2",
+    "validators==0.35.0",
+    "apscheduler==3.11.2",
+    "pymongo[srv]==4.16.0",
+    "yt-dlp==2026.3.3",
+    "aiohttp==3.13.3",
+]
 
-[tool.poetry.scripts]
+[dependency-groups]
+dev = [
+    "pyupgrade==3.21.2",
+    "autoflake==2.3.3",
+    "isort==8.0.1",
+    "flake8==7.3.0",
+    "flake8-pyproject==1.2.4",
+    "mccabe==0.7.0",
+    "mypy==1.19.1",
+    "vulture==2.14",
+    "codespell==2.4.2",
+    "pre-commit==4.5.1",
+    "black==26.3.0",
+]
+
+[build-system]
+requires = ["poetry-core==2.3.2"]
+build-backend = "poetry.core.masonry.api"
+
+[project.scripts]
 neilbot = "main:main"
-
-[tool.poetry.dependencies]
-python = "~3.10"
-py-cord = { extras = ["voice"], version = "^2.7.1" }
-python-dotenv = "^1.2.2"
-validators = "^0.35.0"
-apscheduler = "^3.11.2"
-pymongo = { extras = ["srv"], version = "^4.16.0" }
-yt-dlp = "^2026.3.3"
-aiohttp = "^3.13.3"
-
-[tool.poetry.group.dev.dependencies]
-pyupgrade = "^3.21.2"
-autoflake = "^2.3.3"
-isort = "^8.0.1"
-flake8 = "^7.3.0"
-flake8-pyproject = "^1.2.4"
-mccabe = "^0.7.0"
-mypy = "^1.19.1"
-vulture = "^2.14"
-codespell = "^2.4.2"
-pre-commit = "^4.5.1"
-black = "^26.3.0"
 
 [tool.black]
 target-version = ["py310"]
