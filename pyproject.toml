@@ -17,7 +17,7 @@ authors = ["Neil Wiborg <NeilWiborg@outlook.com>"]
 neilbot = "main:main"
 
 [tool.poetry.dependencies]
-python = "~3.10"
+python = "~3.14.3"
 py-cord = { extras = ["voice"], version = "^2.7.1" }
 python-dotenv = "^1.2.2"
 validators = "^0.35.0"
