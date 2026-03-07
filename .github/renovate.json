@@ -43,7 +43,7 @@
         "poetry",
         "pre-commit"
       ],
-      "groupName": "pre-commit hooks",
+      "groupName": "pyproject dependencies and pre-commit hooks",
       "matchDepNames": [
         "!python"
       ]
