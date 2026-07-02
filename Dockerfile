@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.14
 WORKDIR /bot
 COPY . /bot
 RUN apt-get update -qq && apt-get install ffmpeg -y

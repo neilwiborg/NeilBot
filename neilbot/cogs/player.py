@@ -256,7 +256,7 @@ class Player(commands.Cog):
 
             except discord.ClientException:
                 await ctx.respond(f"Already connected to {channel.name}!")
-            except (asyncio.TimeoutError, discord.opus.OpusNotLoaded):
+            except TimeoutError, discord.opus.OpusNotLoaded:
                 await ctx.respond(
                     f"Unable to connect to {channel.name}, please try again later"
                 )
