@@ -54,7 +54,9 @@ class PlayerButtons(discord.ui.View):
         emoji="⏯️",
     )
     async def toggle_play_pause_callback(
-        self, button: discord.Button, interaction: discord.Interaction
+        self,
+        button: discord.ui.Button[PlayerButtons],
+        interaction: discord.Interaction,
     ) -> None:
         """Button to toggle the music playing state between paused and resumed.
 
@@ -78,7 +80,9 @@ class PlayerButtons(discord.ui.View):
         emoji="⏭",
     )
     async def skip_callback(
-        self, button: discord.Button, interaction: discord.Interaction
+        self,
+        button: discord.ui.Button[PlayerButtons],
+        interaction: discord.Interaction,
     ) -> None:
         """Button to skip the current song.
 
@@ -102,7 +106,9 @@ class PlayerButtons(discord.ui.View):
         emoji="⏹️",
     )
     async def stop_callback(
-        self, button: discord.Button, interaction: discord.Interaction
+        self,
+        button: discord.ui.Button[PlayerButtons],
+        interaction: discord.Interaction,
     ) -> None:
         """Button to stop the current song.
 
@@ -126,7 +132,9 @@ class PlayerButtons(discord.ui.View):
         emoji="🎶",
     )
     async def queue_callback(
-        self, button: discord.Button, interaction: discord.Interaction
+        self,
+        button: discord.ui.Button[PlayerButtons],
+        interaction: discord.Interaction,
     ) -> None:
         """Button to show the music queue.
 
